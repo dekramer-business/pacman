@@ -18,9 +18,10 @@ def depthFirstSearch(problem):
     ```
     """
 
-    print("Start: %s" % (str(problem.startingState())))
-    print("Is the start a goal?: %s" % (problem.isGoal(problem.startingState())))
-    print("Start's successors: %s" % (problem.successorStates(problem.startingState())))
+    # print("Start: %s" % (str(problem.startingState())))
+    # print("Is the start a goal?: %s" % (problem.isGoal(problem.startingState())))
+    # print("Start's successors: %s" % (problem.successorStates(problem.startingState())))
+    # print("succesor's directions type: ", type((problem.successorStates(problem.startingState()))[0][1]))
 
     # *** Your Code Here ***
     if problem.isGoal(problem.startingState()):
@@ -44,27 +45,30 @@ def depthFirstSearch(problem):
 
             list_thang = []
             curr = current_node
-            while curr != None:
-                list_thang.append(curr)
-                curr = parents.get(curr)
-            
-            print("list_thang: %s" % (list_thang))
+            while True:
+                parent = parents.get(curr)
+                if parent is None:
+                    break
+                else:
+                    (curr, dir) = parent
 
-            return explored
+                print("curr: %s" % str(curr))
+                print("dir type: ", type(dir))
+                list_thang.append(dir)
+
+            list_thang.reverse()
+            return list_thang
         
-        explored.add(current_node)
 
+        explored.add(current_node)
         # starts left, could be reversed
         for (neighbor, direction, weight) in problem.successorStates(current_node):
             # print("%s's Neighbor: %s" % (current_node, neighbor))
             if (neighbor not in frontier) and (neighbor not in explored):
                 frontier.append(neighbor)
-                parents[neighbor] = current_node
+                parents[neighbor] = (current_node, direction)
                 # parents[neighbor] = direction
 
-
-
-    # raise NotImplementedError()
 
 def breadthFirstSearch(problem):
     """
