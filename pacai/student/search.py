@@ -28,46 +28,41 @@ def depthFirstSearch(problem):
         return []
     
     frontier = [problem.startingState()]  # stack for DFS
-    explored = set()
+    explored = set()  # init empty set
     parents = {}
-    solution = []
 
     while True:
         if len(frontier) == 0:  # if frontier empty, failure
             return
 
+        # using stack for DFS
         current_node = frontier.pop()
         
+        # if this is the goal state, generate a path from goal to start via parents dictionary
         if problem.isGoal(current_node):
-            print("Goal state: %s" % (str(current_node)))
-            # print("Explored: %s" % (explored))
-            print("Parents: %s" % (parents))
-
-            list_thang = []
-            curr = current_node
+            directions = []
             while True:
-                parent = parents.get(curr)
-                if parent is None:
+                parent = parents.get(current_node)
+                if parent is None:  # when get returns None, we found the full path
                     break
-                else:
-                    (curr, dir) = parent
+                else:  # otherwise unpack the next node and the direction it took
+                    (current_node, direction) = parent 
 
-                print("curr: %s" % str(curr))
-                print("dir type: ", type(dir))
-                list_thang.append(dir)
+                directions.append(direction)
 
-            list_thang.reverse()
-            return list_thang
+            # directions are in reverse, flip the list. This is faster than prepending every time in native python
+            directions.reverse()
+            return directions
         
 
         explored.add(current_node)
-        # starts left, could be reversed
+        # unpack neighbor, direction, and path weight for each neighboring node
         for (neighbor, direction, weight) in problem.successorStates(current_node):
-            # print("%s's Neighbor: %s" % (current_node, neighbor))
             if (neighbor not in frontier) and (neighbor not in explored):
-                frontier.append(neighbor)
+                frontier.append(neighbor)  # add neighbor to frontier
+                # set neighbor's parent and parent->neighbor direction here
+                # can also set path weight and use that to calculate the full path at the end
                 parents[neighbor] = (current_node, direction)
-                # parents[neighbor] = direction
 
 
 def breadthFirstSearch(problem):
@@ -76,6 +71,45 @@ def breadthFirstSearch(problem):
     """
 
     # *** Your Code Here ***
+    if problem.isGoal(problem.startingState()):
+        return []
+    
+    frontier = [problem.startingState()]  # queue for BFS
+    explored = set()  # init empty set
+    parents = {}
+
+    while True:
+        if len(frontier) == 0:  # if frontier empty, failure
+            return
+
+        # using queue for BFS
+        current_node = frontier.pop(0)
+        
+        # if this is the goal state, generate a path from goal to start via parents dictionary
+        if problem.isGoal(current_node):
+            directions = []
+            while True:
+                parent = parents.get(current_node)
+                if parent is None:  # when get returns None, we found the full path
+                    break
+                else:  # otherwise unpack the next node and the direction it took
+                    (current_node, direction) = parent 
+
+                directions.append(direction)
+
+            # directions are in reverse, flip the list. This is faster than prepending every time in native python
+            directions.reverse()
+            return directions
+        
+
+        explored.add(current_node)
+        # unpack neighbor, direction, and path weight for each neighboring node
+        for (neighbor, direction, weight) in problem.successorStates(current_node):
+            if (neighbor not in frontier) and (neighbor not in explored):
+                frontier.append(neighbor)  # add neighbor to frontier
+                # set neighbor's parent and parent->neighbor direction here
+                # can also set path weight and use that to calculate the full path at the end
+                parents[neighbor] = (current_node, direction)
     raise NotImplementedError()
 
 def uniformCostSearch(problem):
