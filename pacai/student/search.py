@@ -214,6 +214,8 @@ def aStarSearch(problem, heuristic):
         # unpack neighbor, direction, and path weight for each neighboring node
         for (neighbor, direction, weight) in problem.successorStates(current_node):
             if (neighbor not in frontier.queue) and (neighbor not in explored):
+                #! Should i do parent weight to make decision based on total weight, or just which path is currently cheapest?
+                # frontier.put((weight + parent_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
                 frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
                 # set neighbor's parent and parent->neighbor direction here
                 # can also set path weight and use that to calculate the full path at the end
