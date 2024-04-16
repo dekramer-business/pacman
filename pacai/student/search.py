@@ -166,9 +166,8 @@ def uniformCostSearch(problem):
                 parents[neighbor] = (current_node, direction)
             if (neighbor in current_frontier
                     and current_frontier[neighbor] > weight + parent_path_weight):
-                # update frontier, have to do a crappy workaround
-                # there has to be a better way
-                current_frontier[neighbor] = weight + parent_path_weight
+                # update current_frontier dictionary, repush everything to frontier
+                current_frontier[neighbor] = weight + parent_path_weight  
                 frontier = PriorityQueue()
 
                 for nd, wt in current_frontier.items():
