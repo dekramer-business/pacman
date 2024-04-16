@@ -121,10 +121,7 @@ def uniformCostSearch(problem):
     """
     Search the node of least total cost first.
     """
-
-    #! I may be doing path cost incorrect, currently nodes are added based on their edge weights.
-    #! Should I instead add them based on their total path cost?
-
+    
     # *** Your Code Here ***
     if problem.isGoal(problem.startingState()):
         return []
@@ -135,41 +132,64 @@ def uniformCostSearch(problem):
     explored = set()  # init empty set
     parents = {}
 
-    while True:
-        if frontier.qsize() == 0:  # if frontier empty, failure
-            return
+    cheapest_goal_node = None
+    cheapest_goal_node_weight = None
 
+    while frontier.qsize() > 0:
         # using priority queue for UCS
         frontier_get = frontier.get()
-        (parent_weight, current_node) = frontier_get
+        (parent_path_weight, current_node) = frontier_get
         
-        # if this is the goal state, generate a path from goal to start via parents dictionary
+        # if this is the goal state, check if its the best route, proceed
         if problem.isGoal(current_node):
-            directions = []
-            while True:
-                parent = parents.get(current_node)
-                if parent is None:  # when get returns None, we found the full path
-                    break
-                else:  # otherwise unpack the next node and the direction it took
-                    (current_node, direction) = parent 
 
-                directions.append(direction)
-
-            # directions are in reverse, flip the list. This is faster than prepending every time in native python
-            directions.reverse()
-            return directions
+            # Check if this node is cheaper than current best
+            # if so, set best node and weight, continue finding best path
+            if cheapest_goal_node is None:
+                cheapest_goal_node = current_node
+                cheapest_goal_node_weight = parent_path_weight
+            elif parent_path_weight <= cheapest_goal_node_weight:
+                cheapest_goal_node = current_node
+                cheapest_goal_node_weight = parent_path_weight
         
 
         explored.add(current_node)
+        current_frontier = {ndwt[1]:ndwt[0] for ndwt in frontier.queue}
         # unpack neighbor, direction, and path weight for each neighboring node
         for (neighbor, direction, weight) in problem.successorStates(current_node):
-            if (neighbor not in frontier.queue) and (neighbor not in explored):
-                #! Should i do parent weight to make decision based on total weight, or just which path is currently cheapest?
-                frontier.put((weight + parent_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
-                # frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
-                # set neighbor's parent and parent->neighbor direction here
-                # can also set path weight and use that to calculate the full path at the end
+            if (neighbor not in current_frontier) and (neighbor not in explored):
+                frontier.put((weight + parent_path_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
                 parents[neighbor] = (current_node, direction)
+            if (neighbor in frontier and frontier[neighbor] > weight + parent_path_weight):
+                #! update frontier, right now i literally just push again lol
+                frontier.put((weight + parent_path_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
+                parents[neighbor] = (current_node, direction)
+
+    
+    # frontier is empty, if no node found return, else generate path
+    if cheapest_goal_node is None:
+        return
+    else:
+        # Below code uses the dictionary to generate a path from any node to initial
+        directions = []
+        current_node = cheapest_goal_node
+        while True:
+            parent = parents.get(current_node)
+            if parent is None:  # when get returns None, we found the full path
+                break
+            else:  # otherwise unpack the next node and the direction it took
+                (current_node, direction) = parent 
+
+            directions.append(direction)
+
+        # directions are in reverse, flip the list. This is faster than prepending every time in native python
+        directions.reverse()
+        return directions
+
+
+
+
+
 
 def aStarSearch(problem, heuristic):
     """
@@ -177,47 +197,4 @@ def aStarSearch(problem, heuristic):
     """
 
     # *** Your Code Here ***
-    if problem.isGoal(problem.startingState()):
-        return []
-    
-    frontier = PriorityQueue()  # priority queue for UCS
-    frontier.put((0, problem.startingState()))  # starting state has a cost of 0
-
-    explored = set()  # init empty set
-    parents = {}
-
-    while True:
-        if frontier.qsize() == 0:  # if frontier empty, failure
-            return
-
-        # using priority queue for UCS
-        frontier_get = frontier.get()
-        (parent_weight, current_node) = frontier_get
-        
-        # if this is the goal state, generate a path from goal to start via parents dictionary
-        if problem.isGoal(current_node):
-            directions = []
-            while True:
-                parent = parents.get(current_node)
-                if parent is None:  # when get returns None, we found the full path
-                    break
-                else:  # otherwise unpack the next node and the direction it took
-                    (current_node, direction) = parent 
-
-                directions.append(direction)
-
-            # directions are in reverse, flip the list. This is faster than prepending every time in native python
-            directions.reverse()
-            return directions
-        
-
-        explored.add(current_node)
-        # unpack neighbor, direction, and path weight for each neighboring node
-        for (neighbor, direction, weight) in problem.successorStates(current_node):
-            if (neighbor not in frontier.queue) and (neighbor not in explored):
-                #! Should i do parent weight to make decision based on total weight, or just which path is currently cheapest?
-                frontier.put((weight + parent_weight + heuristic(neighbor, problem), neighbor))  # add neighbor and (path weight + parent weight + hueristic) to frontier
-                # frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
-                # set neighbor's parent and parent->neighbor direction here
-                # can also set path weight and use that to calculate the full path at the end
-                parents[neighbor] = (current_node, direction)
+    pass
