@@ -132,7 +132,7 @@ def uniformCostSearch(problem):
     explored = set()  # init empty set
     parents = {}
 
-    cheapest_goal_node = None
+    goal_node = None
     cheapest_goal_node_weight = None
 
     while frontier.qsize() > 0:
@@ -142,15 +142,16 @@ def uniformCostSearch(problem):
         
         # if this is the goal state, check if its the best route, proceed
         if problem.isGoal(current_node):
-
-            # Check if this node is cheaper than current best
-            # if so, set best node and weight, continue finding best path
-            if cheapest_goal_node is None:
-                cheapest_goal_node = current_node
-                cheapest_goal_node_weight = parent_path_weight
-            elif parent_path_weight <= cheapest_goal_node_weight:
-                cheapest_goal_node = current_node
-                cheapest_goal_node_weight = parent_path_weight
+            goal_node = current_node
+            break
+            # # Check if this node is cheaper than current best
+            # # if so, set best node and weight, continue finding best path
+            # if goal_node is None:
+            #     goal_node = current_node
+            #     cheapest_goal_node_weight = parent_path_weight
+            # elif parent_path_weight <= cheapest_goal_node_weight:
+            #     goal_node = current_node
+            #     cheapest_goal_node_weight = parent_path_weight
         
 
         explored.add(current_node)
@@ -160,19 +161,23 @@ def uniformCostSearch(problem):
             if (neighbor not in current_frontier) and (neighbor not in explored):
                 frontier.put((weight + parent_path_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
                 parents[neighbor] = (current_node, direction)
-            if (neighbor in frontier and frontier[neighbor] > weight + parent_path_weight):
+            if (neighbor in current_frontier and current_frontier[neighbor] > weight + parent_path_weight):
                 #! update frontier, right now i literally just push again lol
-                frontier.put((weight + parent_path_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
+                current_frontier[neighbor] = weight + parent_path_weight
+                frontier = PriorityQueue()
+                
+                for nd,wt in current_frontier.items():
+                    frontier.put((wt, nd))
                 parents[neighbor] = (current_node, direction)
 
     
     # frontier is empty, if no node found return, else generate path
-    if cheapest_goal_node is None:
+    if goal_node is None:
         return
     else:
         # Below code uses the dictionary to generate a path from any node to initial
         directions = []
-        current_node = cheapest_goal_node
+        current_node = goal_node
         while True:
             parent = parents.get(current_node)
             if parent is None:  # when get returns None, we found the full path
