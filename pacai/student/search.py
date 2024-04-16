@@ -212,8 +212,6 @@ def aStarSearch(problem, heuristic):
         # set goal if this is the goal state
         if problem.isGoal(current_node):
             goal_node = current_node
-            #! problem with this, this was popped based on its heuristic + actual cost
-            #! the heuristic may be incorrect, so breaking may be inoptimal
             break
 
         explored.add(current_node)
