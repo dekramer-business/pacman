@@ -1,6 +1,7 @@
 """
 In this file, you will implement generic search algorithms which are called by Pacman agents.
 """
+from collections import deque
 from queue import PriorityQueue
 
 def depthFirstSearch(problem):
@@ -28,7 +29,7 @@ def depthFirstSearch(problem):
     if problem.isGoal(problem.startingState()):
         return []
     
-    frontier = [problem.startingState()]  # stack for DFS
+    frontier = deque([problem.startingState()])  # stack for DFS
     explored = set()  # init empty set
     parents = {}
 
@@ -36,7 +37,7 @@ def depthFirstSearch(problem):
         if len(frontier) == 0:  # if frontier empty, failure
             return
 
-        # using stack for DFS
+        # using stack for DFS, pop's right by default
         current_node = frontier.pop()
         
         # if this is the goal state, generate a path from goal to start via parents dictionary
@@ -60,7 +61,7 @@ def depthFirstSearch(problem):
         # unpack neighbor, direction, and path weight for each neighboring node
         for (neighbor, direction, weight) in problem.successorStates(current_node):
             if (neighbor not in frontier) and (neighbor not in explored):
-                frontier.append(neighbor)  # add neighbor to frontier
+                frontier.append(neighbor)  # add neighbor to frontier, appends right by default
                 # set neighbor's parent and parent->neighbor direction here
                 # can also set path weight and use that to calculate the full path at the end
                 parents[neighbor] = (current_node, direction)
