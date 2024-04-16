@@ -232,7 +232,7 @@ def aStarSearch(problem, heuristic):
             elif (neighbor in searchable_frontier
                     and searchable_frontier[neighbor] > cost + heuristic_cost):
                 # update searchable_frontier dictionary, repush everything to frontier
-                searchable_frontier[neighbor] = cost + heuristic
+                searchable_frontier[neighbor] = cost + heuristic_cost
                 frontier = PriorityQueue()
 
                 for nd, wt in searchable_frontier.items():
