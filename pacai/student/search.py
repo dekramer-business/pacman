@@ -129,32 +129,21 @@ def uniformCostSearch(problem):
         return []
 
     frontier = PriorityQueue()  # priority queue for UCS
-    # starting state has a cost of 0
-    frontier.put((0, problem.startingState()))
+    frontier.put((0, problem.startingState()))  # start state cost of 0
 
     explored = set()  # init empty set
-    parents = {}
-
+    parents = {}  # dictionary to hold parents
     goal_node = None
-    # cheapest_goal_node_weight = None
 
     while frontier.qsize() > 0:
         # using priority queue for UCS
         frontier_get = frontier.get()
         (parent_path_weight, current_node) = frontier_get
 
-        # if this is the goal state, check if its the best route, proceed
+        # if this is the goal state, youre done
         if problem.isGoal(current_node):
             goal_node = current_node
             break
-            # # Check if this node is cheaper than current best
-            # # if so, set best node and weight, continue finding best path
-            # if goal_node is None:
-            #     goal_node = current_node
-            #     cheapest_goal_node_weight = parent_path_weight
-            # elif parent_path_weight <= cheapest_goal_node_weight:
-            #     goal_node = current_node
-            #     cheapest_goal_node_weight = parent_path_weight
 
         explored.add(current_node)
         current_frontier = {ndwt[1]: ndwt[0] for ndwt in frontier.queue}
@@ -167,7 +156,7 @@ def uniformCostSearch(problem):
             if (neighbor in current_frontier
                     and current_frontier[neighbor] > weight + parent_path_weight):
                 # update current_frontier dictionary, repush everything to frontier
-                current_frontier[neighbor] = weight + parent_path_weight  
+                current_frontier[neighbor] = weight + parent_path_weight
                 frontier = PriorityQueue()
 
                 for nd, wt in current_frontier.items():
@@ -175,9 +164,7 @@ def uniformCostSearch(problem):
                 parents[neighbor] = (current_node, direction)
 
     # frontier is empty, if no node found return, else generate path
-    if goal_node is None:
-        return
-    else:
+    if goal_node is not None:
         # Below code uses the dictionary to generate a path from any node to initial
         directions = []
         current_node = goal_node
@@ -194,7 +181,9 @@ def uniformCostSearch(problem):
         # This is faster than prepending every time in native python
         directions.reverse()
         return directions
-
+    else:
+        return
+        
 
 def aStarSearch(problem, heuristic):
     """
