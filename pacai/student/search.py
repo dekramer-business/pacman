@@ -80,7 +80,7 @@ def breadthFirstSearch(problem):
     if problem.isGoal(problem.startingState()):
         return []
     
-    frontier = [problem.startingState()]  # queue for BFS
+    frontier = deque([problem.startingState()])  # queue for BFS
     explored = set()  # init empty set
     parents = {}
 
@@ -88,8 +88,8 @@ def breadthFirstSearch(problem):
         if len(frontier) == 0:  # if frontier empty, failure
             return
 
-        # using queue for BFS
-        current_node = frontier.pop(0)
+        # using queue for BFS, pop left needed for FIFO
+        current_node = frontier.popleft()
         
         # if this is the goal state, generate a path from goal to start via parents dictionary
         if problem.isGoal(current_node):
@@ -112,7 +112,7 @@ def breadthFirstSearch(problem):
         # unpack neighbor, direction, and path weight for each neighboring node
         for (neighbor, direction, weight) in problem.successorStates(current_node):
             if (neighbor not in frontier) and (neighbor not in explored):
-                frontier.append(neighbor)  # add neighbor to frontier
+                frontier.append(neighbor)  # add neighbor to frontier, appends right by default
                 # set neighbor's parent and parent->neighbor direction here
                 # can also set path weight and use that to calculate the full path at the end
                 parents[neighbor] = (current_node, direction)
@@ -165,8 +165,8 @@ def uniformCostSearch(problem):
         for (neighbor, direction, weight) in problem.successorStates(current_node):
             if (neighbor not in frontier.queue) and (neighbor not in explored):
                 #! Should i do parent weight to make decision based on total weight, or just which path is currently cheapest?
-                # frontier.put((weight + parent_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
-                frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
+                frontier.put((weight + parent_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
+                # frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
                 # set neighbor's parent and parent->neighbor direction here
                 # can also set path weight and use that to calculate the full path at the end
                 parents[neighbor] = (current_node, direction)
@@ -192,7 +192,7 @@ def aStarSearch(problem, heuristic):
 
         # using priority queue for UCS
         frontier_get = frontier.get()
-        (path_weight, current_node) = frontier_get
+        (parent_weight, current_node) = frontier_get
         
         # if this is the goal state, generate a path from goal to start via parents dictionary
         if problem.isGoal(current_node):
@@ -216,8 +216,8 @@ def aStarSearch(problem, heuristic):
         for (neighbor, direction, weight) in problem.successorStates(current_node):
             if (neighbor not in frontier.queue) and (neighbor not in explored):
                 #! Should i do parent weight to make decision based on total weight, or just which path is currently cheapest?
-                # frontier.put((weight + parent_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
-                frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
+                frontier.put((weight + parent_weight + heuristic(neighbor, problem), neighbor))  # add neighbor and (path weight + parent weight + hueristic) to frontier
+                # frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
                 # set neighbor's parent and parent->neighbor direction here
                 # can also set path weight and use that to calculate the full path at the end
                 parents[neighbor] = (current_node, direction)
