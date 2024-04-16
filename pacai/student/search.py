@@ -153,7 +153,7 @@ def uniformCostSearch(problem):
                 # add neighbor and (path weight + parent weight) to frontier
                 frontier.put((weight + parent_path_weight, neighbor))
                 parents[neighbor] = (current_node, direction)
-            if (neighbor in current_frontier
+            elif (neighbor in current_frontier
                     and current_frontier[neighbor] > weight + parent_path_weight):
                 # update current_frontier dictionary, repush everything to frontier
                 current_frontier[neighbor] = weight + parent_path_weight
@@ -191,4 +191,76 @@ def aStarSearch(problem, heuristic):
     """
 
     # *** Your Code Here ***
-    pass
+    if problem.isGoal(problem.startingState()):
+        return []
+
+    frontier = PriorityQueue()  # priority queue for UCS
+    frontier.put((0, problem.startingState()))  # start state cost of 0
+
+    explored = set()  # init empty set
+    parents = {}  # dictionary to hold parents
+    path_cost_to_node = {}
+    path_cost_to_node[problem.startingState()] = 0
+    goal_node = None
+
+    while frontier.qsize() > 0:
+        # using priority queue for UCS
+        frontier_get = frontier.get()
+        (heuristic_weight, current_node) = frontier_get
+        parent_path_weight = path_cost_to_node[current_node]
+
+        # set goal if this is the goal state
+        if problem.isGoal(current_node):
+            goal_node = current_node
+            #! problem with this, this was popped based on its heuristic + actual cost
+            #! the heuristic may be incorrect, so breaking may be inoptimal
+            break
+
+        explored.add(current_node)
+        # Priority queues are not searchable by element in python, this is a workaround
+        searchable_frontier = {ndwt[1]: ndwt[0] for ndwt in frontier.queue}
+        # unpack neighbor, direction, and path weight for each neighboring node
+        for (neighbor, direction, weight) in problem.successorStates(current_node):
+            cost = weight + parent_path_weight
+            heuristic_cost = heuristic(neighbor, problem)
+
+            if (neighbor not in searchable_frontier) and (neighbor not in explored):
+                # add neighbor and (path weight + parent weight) to frontier
+                frontier.put((cost + heuristic_cost, neighbor))
+                parents[neighbor] = (current_node, direction)
+                path_cost_to_node[neighbor] = cost
+            elif (neighbor in searchable_frontier
+                    and searchable_frontier[neighbor] > cost + heuristic_cost):
+                # update searchable_frontier dictionary, repush everything to frontier
+                searchable_frontier[neighbor] = cost + heuristic
+                frontier = PriorityQueue()
+
+                for nd, wt in searchable_frontier.items():
+                    frontier.put((wt, nd))
+                
+                # update path cost to this node if this cost is cheaper than it
+                # was previously, also update parent
+                if path_cost_to_node[neighbor] < cost:
+                    path_cost_to_node[neighbor] = cost
+                    parents[neighbor] = (current_node, direction)
+
+    # frontier is empty, if no node found return, else generate path
+    if goal_node is not None:
+        # Below code uses the dictionary to generate a path from any node to initial
+        directions = []
+        current_node = goal_node
+        while True:
+            parent = parents.get(current_node)
+            if parent is None:  # when get returns None, we found the full path
+                break
+            else:  # otherwise unpack the next node and the direction it took
+                (current_node, direction) = parent
+
+            directions.append(direction)
+
+        # directions are in reverse, flip the list
+        # This is faster than prepending every time in native python
+        directions.reverse()
+        return directions
+    else:
+        return
