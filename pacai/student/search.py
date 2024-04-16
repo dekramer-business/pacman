@@ -121,6 +121,9 @@ def uniformCostSearch(problem):
     Search the node of least total cost first.
     """
 
+    #! I may be doing path cost incorrect, currently nodes are added based on their edge weights.
+    #! Should I instead add them based on their total path cost?
+
     # *** Your Code Here ***
     if problem.isGoal(problem.startingState()):
         return []
@@ -137,7 +140,7 @@ def uniformCostSearch(problem):
 
         # using priority queue for UCS
         frontier_get = frontier.get()
-        (path_weight, current_node) = frontier_get
+        (parent_weight, current_node) = frontier_get
         
         # if this is the goal state, generate a path from goal to start via parents dictionary
         if problem.isGoal(current_node):
@@ -160,6 +163,8 @@ def uniformCostSearch(problem):
         # unpack neighbor, direction, and path weight for each neighboring node
         for (neighbor, direction, weight) in problem.successorStates(current_node):
             if (neighbor not in frontier.queue) and (neighbor not in explored):
+                #! Should i do parent weight to make decision based on total weight, or just which path is currently cheapest?
+                # frontier.put((weight + parent_weight, neighbor))  # add neighbor and (path weight + parent weight) to frontier
                 frontier.put((weight, neighbor))  # add neighbor and path weight to frontier
                 # set neighbor's parent and parent->neighbor direction here
                 # can also set path weight and use that to calculate the full path at the end
