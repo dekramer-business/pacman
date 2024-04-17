@@ -182,11 +182,7 @@ def cornersHeuristic(state, problem):
     print("manhattan of (28,12) and (28,1): ", distance.manhattan((28,12), (28,1)))
     print("min_dist: ", min_dist)
 
-
-
-    raise ValueError("Stop right there!.")
-
-    return heuristic.null(state, problem)  # Default to trivial solution
+    return min_dist
 
 # some things i'm noticing: specifying the start point doesnt matter
 #   the distance will always be the same!
