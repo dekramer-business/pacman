@@ -66,45 +66,41 @@ class CornersProblem(SearchProblem):
         right = self.walls.getWidth() - 2
 
         self.corners = ((1, 1), (1, top), (right, 1), (right, top))
+        visited = [False, False, False, False]
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 logging.warning('Warning: no food in corner ' + str(corner))
 
         # *** Your Code Here ***
         # start state has position and list of corners
-        self.startState = (self.startingPosition, [])
+        self.startingGameState = startingGameState
+        self.start = (startingGameState.getPacmanPosition(), visited)
     
     def startingState(self):
-        return self.startState
+        return self.start
     
     def isGoal(self, state):
-        if (len(state[1]) < 4):
-            return False
-        return True
+        return state[1].count(True) == 4
 
     def successorStates(self, state):
         successors = []
-
+        self._numExpanded += 1
         for action in Directions.CARDINAL:
             print("state[0]: ", state[0])
             x, y = state[0]
-            visited_corners = state[1]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
+            next_succ = (nextx, nexty)
 
             if (not hitsWall):
+                visited_corners = state[1].copy()
                 # Construct the successor.
-                successor_cord = (nextx, nexty)
-                successor_cost = 1
+                if (next_succ in self.corners):
+                    visited_corners[self.corners.index(next_succ)] = True
 
-                corners_seen = visited_corners
-                if (state[0] in self.corners) and (state[0] not in corners_seen):
-                    corners_seen.append(state[0])
-
-                successor_state = (successor_cord, corners_seen)
-                
-                successors.append((successor_state, action, successor_cost))
+                successor_state = (next_succ, visited_corners)
+                successors.append((successor_state, action, 1))
 
         return successors
 
