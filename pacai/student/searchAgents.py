@@ -8,6 +8,7 @@ Good luck and happy searching!
 import logging
 
 from pacai.core.actions import Actions
+from pacai.core.directions import Directions
 from pacai.core.search import heuristic
 from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
@@ -30,11 +31,13 @@ class CornersProblem(SearchProblem):
 
     `pacai.core.search.problem.SearchProblem.isGoal`:
     Returns whether this search state is a goal state of the problem.
+    list len 4 is all corners visited
 
     `pacai.core.search.problem.SearchProblem.successorStates`:
     Returns successor states, the actions they require, and a cost of 1.
     The following code snippet may prove useful:
     ```
+        # returns (successor state, action, cost of taking the action).
         successors = []
 
         for action in Directions.CARDINAL:
@@ -45,6 +48,10 @@ class CornersProblem(SearchProblem):
 
             if (not hitsWall):
                 # Construct the successor.
+                successor_cord = (nextx, netxy)
+                successor_cost = 1
+                # 
+                corners_seen = list(corner)
 
         return successors
     ```
@@ -64,7 +71,42 @@ class CornersProblem(SearchProblem):
                 logging.warning('Warning: no food in corner ' + str(corner))
 
         # *** Your Code Here ***
-        raise NotImplementedError()
+        # start state has position and list of corners
+        self.startState = (self.startingPosition, [])
+    
+    def startingState(self):
+        return self.startState
+    
+    def isGoal(self, state):
+        if (len(state[1]) < 4):
+            return False
+        return True
+
+    def successorStates(self, state):
+        successors = []
+
+        for action in Directions.CARDINAL:
+            print("state[0]: ", state[0])
+            x, y = state[0]
+            visited_corners = state[1]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            if (not hitsWall):
+                # Construct the successor.
+                successor_cord = (nextx, nexty)
+                successor_cost = 1
+
+                corners_seen = visited_corners
+                if (state[0] in self.corners) and (state[0] not in corners_seen):
+                    corners_seen.append(state[0])
+
+                successor_state = (successor_cord, corners_seen)
+                
+                successors.append((successor_state, action, successor_cost))
+
+        return successors
 
     def actionsCost(self, actions):
         """
