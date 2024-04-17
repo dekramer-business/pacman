@@ -66,7 +66,7 @@ class CornersProblem(SearchProblem):
         right = self.walls.getWidth() - 2
 
         self.corners = ((1, 1), (1, top), (right, 1), (right, top))
-        visited = [False, False, False, False]
+        visited = (False, False, False, False)
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 logging.warning('Warning: no food in corner ' + str(corner))
@@ -94,11 +94,12 @@ class CornersProblem(SearchProblem):
             next_succ = (nextx, nexty)
 
             if (not hitsWall):
-                visited_corners = state[1].copy()
+                visited_corners = list(state[1])
                 # Construct the successor.
                 if (next_succ in self.corners):
                     visited_corners[self.corners.index(next_succ)] = True
 
+                visited_corners = tuple(visited_corners)
                 successor_state = (next_succ, visited_corners)
                 successors.append((successor_state, action, 1))
 
