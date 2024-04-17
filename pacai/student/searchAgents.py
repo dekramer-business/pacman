@@ -16,6 +16,7 @@ from pacai.agents.base import BaseAgent
 from pacai.agents.search.base import SearchAgent
 from pacai.core import distance
 
+
 class CornersProblem(SearchProblem):
     """
     This search problem finds paths through all four corners of a layout.
@@ -57,6 +58,7 @@ class CornersProblem(SearchProblem):
         return successors
     ```
     """
+
     def __init__(self, startingGameState):
         super().__init__()
 
@@ -75,10 +77,10 @@ class CornersProblem(SearchProblem):
         # start state has position and list of corners
         self.startingGameState = startingGameState
         self.start = (startingGameState.getPacmanPosition(), visited)
-    
+
     def startingState(self):
         return self.start
-    
+
     def isGoal(self, state):
         return state[1].count(True) == 4
 
@@ -124,6 +126,7 @@ class CornersProblem(SearchProblem):
 
         return len(actions)
 
+
 def cornersHeuristic(state, problem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -133,14 +136,6 @@ def cornersHeuristic(state, problem):
     i.e. it should be admissible.
     (You need not worry about consistency for this heuristic to receive full credit.)
     """
-
-    # Useful information.
-    # corners = problem.corners  # These are the corner coordinates
-    # walls = problem.walls  # These are the walls of the maze, as a Grid.
-    #
-    # traveling salesman, with all arcs going back to start = 0.? may cause problems
-    # that way we only calculate the best path from start to all corners being hit
-    # uses manhattan distance
 
     # *** Your Code Here ***
     # Get all corners we need
@@ -153,39 +148,22 @@ def cornersHeuristic(state, problem):
     for i in range(len(visited_corners_bools)):
         if visited_corners_bools[i] is False:
             points_of_interest.append(problem.corners[i])
-    
+
     # add start to point of interest
     points_of_interest.append(start_coords)
-    
+
     # for state and all corners, get distances between
     for x in range(len(points_of_interest)):
         dists.append([])
         for y in range(len(points_of_interest)):
-            dists[x].append(distance.manhattan(points_of_interest[x], points_of_interest[y]))
-        # dists[x].append(0)  #! return to start is cost 0, not sure if this is bad
-    
+            dists[x].append(distance.manhattan(
+                points_of_interest[x], points_of_interest[y]))
+
+    # call helper function
     min_dist = open_traveling_salesman(points_of_interest, dists)
-
-    # print to see if i'm making sense
-    print("start state: ", state)
-    print("points of interest: ", points_of_interest)
-    print("visited corners bools: ", visited_corners_bools)
-    print("dists: ", dists)
-    print("manhattan of (1,1) and (5,2): ", distance.manhattan((1,1), (5,2)))
-    print("manhattan of (1,12) and (1,1): ", distance.manhattan((1,12), (1,1)))
-    print("manhattan of (1,12) and (28,12): ", distance.manhattan((1,12), (28,12)))
-    print("manhattan of (28,12) and (28,1): ", distance.manhattan((28,12), (28,1)))
-    print("--------")
-    print("manhattan of (1,1) and (5,2): ", distance.manhattan((1,1), (5,2)))
-    print("manhattan of (5,2) and (1,12): ", distance.manhattan((1,12), (1,1)))
-    print("manhattan of (1,12) and (28,12): ", distance.manhattan((1,12), (28,12)))
-    print("manhattan of (28,12) and (28,1): ", distance.manhattan((28,12), (28,1)))
-    print("min_dist: ", min_dist)
-
     return min_dist
 
-# some things i'm noticing: specifying the start point doesnt matter
-#   the distance will always be the same!
+
 def open_traveling_salesman(points_of_interest, dists):
     point_count = len(dists)
     start_index = len(dists) - 1
@@ -197,23 +175,24 @@ def open_traveling_salesman(points_of_interest, dists):
         total_distance = 0
 
         while len(unvisited_points) is not 0:
-                # find shortest distance to next point
-                nearest_point = None
-                min_dist_to_unvisited = float('inf')
-                for unvisited_point in unvisited_points:
-                    distance_to_point = dists[current_point][unvisited_point]
-                    if distance_to_point < min_dist_to_unvisited:
-                        min_dist_to_unvisited = distance_to_point
-                        nearest_point = unvisited_point
-                
-                # calc total and remove from unvisited
-                total_distance += dists[current_point][nearest_point]
-                unvisited_points.remove(nearest_point)
-                current_point = nearest_point
+            # find shortest distance to next point
+            nearest_point = None
+            min_dist_to_unvisited = float('inf')
+            for unvisited_point in unvisited_points:
+                distance_to_point = dists[current_point][unvisited_point]
+                if distance_to_point < min_dist_to_unvisited:
+                    min_dist_to_unvisited = distance_to_point
+                    nearest_point = unvisited_point
 
-        min_dist = min(min_dist, total_distance) # get shortest dist
+            # calc total and remove from unvisited
+            total_distance += dists[current_point][nearest_point]
+            unvisited_points.remove(nearest_point)
+            current_point = nearest_point
+
+        min_dist = min(min_dist, total_distance)  # get shortest dist
 
     return min_dist
+
 
 def foodHeuristic(state, problem):
     """
@@ -249,6 +228,7 @@ def foodHeuristic(state, problem):
     # *** Your Code Here ***
     return heuristic.null(state, problem)  # Default to the null heuristic.
 
+
 class ClosestDotSearchAgent(SearchAgent):
     """
     Search for all food using a sequence of searches.
@@ -264,14 +244,15 @@ class ClosestDotSearchAgent(SearchAgent):
         currentState = state
 
         while (currentState.getFood().count() > 0):
-            nextPathSegment = self.findPathToClosestDot(currentState)  # The missing piece
+            nextPathSegment = self.findPathToClosestDot(
+                currentState)  # The missing piece
             self._actions += nextPathSegment
 
             for action in nextPathSegment:
                 legal = currentState.getLegalActions()
                 if action not in legal:
                     raise Exception('findPathToClosestDot returned an illegal move: %s!\n%s' %
-                            (str(action), str(currentState)))
+                                    (str(action), str(currentState)))
 
                 currentState = currentState.generateSuccessor(0, action)
 
@@ -290,6 +271,7 @@ class ClosestDotSearchAgent(SearchAgent):
 
         # *** Your Code Here ***
         raise NotImplementedError()
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -312,11 +294,12 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     Fill this in with a goal test that will complete the problem definition.
     """
 
-    def __init__(self, gameState, start = None):
-        super().__init__(gameState, goal = None, start = start)
+    def __init__(self, gameState, start=None):
+        super().__init__(gameState, goal=None, start=start)
 
         # Store the food for later reference.
         self.food = gameState.getFood()
+
 
 class ApproximateSearchAgent(BaseAgent):
     """
