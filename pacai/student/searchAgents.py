@@ -86,7 +86,7 @@ class CornersProblem(SearchProblem):
         successors = []
         self._numExpanded += 1
         for action in Directions.CARDINAL:
-            print("state[0]: ", state[0])
+            # print("state[0]: ", state[0])
             x, y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
@@ -143,6 +143,35 @@ def cornersHeuristic(state, problem):
     # uses manhattan distance
 
     # *** Your Code Here ***
+    # Get all corners we need
+    state_coords = state[0]
+    visited_corners_bools = list(state[1])
+    points_of_interest = []
+    dists = []
+
+    # get corners we havent visited
+    for i in range(len(visited_corners_bools)):
+        if visited_corners_bools[i] is False:
+            points_of_interest.append(problem.corners[i])
+    
+    # add start to point of interest
+    points_of_interest.append(state_coords)
+    
+    # for state and all corners, get distances between
+    for x in range(len(points_of_interest)):
+        dists.append([])
+        for y in range(len(points_of_interest)):
+            dists[x].append(distance.manhattan(points_of_interest[x], points_of_interest[y]))
+    
+    # print to see if i'm making sense
+    print("state: ", state)
+    print("points of interest: ", points_of_interest)
+    print("visited corners bools: ", visited_corners_bools)
+    print("dists: ", dists)
+    raise ValueError("Stop right there!.")
+
+
+
     return heuristic.null(state, problem)  # Default to trivial solution
 
 def foodHeuristic(state, problem):
