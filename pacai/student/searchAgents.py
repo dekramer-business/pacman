@@ -56,7 +56,6 @@ class CornersProblem(SearchProblem):
         return successors
     ```
     """
-
     def __init__(self, startingGameState):
         super().__init__()
 
