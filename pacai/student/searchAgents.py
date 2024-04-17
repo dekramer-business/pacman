@@ -144,7 +144,7 @@ def cornersHeuristic(state, problem):
 
     # *** Your Code Here ***
     # Get all corners we need
-    state_coords = state[0]
+    start_coords = state[0]
     visited_corners_bools = list(state[1])
     points_of_interest = []
     dists = []
@@ -155,14 +155,17 @@ def cornersHeuristic(state, problem):
             points_of_interest.append(problem.corners[i])
     
     # add start to point of interest
-    points_of_interest.append(state_coords)
+    points_of_interest.append(start_coords)
     
     # for state and all corners, get distances between
     for x in range(len(points_of_interest)):
         dists.append([])
-        for y in range(len(points_of_interest)):
+        for y in range(len(points_of_interest)-1):
             dists[x].append(distance.manhattan(points_of_interest[x], points_of_interest[y]))
+        dists[x].append(0)  #! return to start is cost 0, not sure if this is bad
     
+    min_dist = open_traveling_saleman(points_of_interest, dists)
+
     # print to see if i'm making sense
     print("state: ", state)
     print("points of interest: ", points_of_interest)
@@ -173,6 +176,31 @@ def cornersHeuristic(state, problem):
 
 
     return heuristic.null(state, problem)  # Default to trivial solution
+
+# some things i'm noticing: specifying the start point doesnt matter
+#   the distance will always be the same!
+def open_traveling_salesman(points_of_interest, dists):
+    point_count = len(dists)
+    min_dist = float('inf')  # infinity!
+
+    for start_point in range(point_count):
+        unvisited_points = set(range(point_count))  # set of unvisited points
+        current_point = start_point
+        total_distance = 0
+
+        while len(unvisited_points) is not 0:
+                # find shortest distance to next point
+                nearest_point = None
+                min_dist_to_unvisited = float('inf')
+                for unvisited_point in unvisited_points:
+                    distance_to_point = dists[current_point][unvisited_point]
+                    if distance_to_point < min_dist_to_unvisited:
+                        min_dist_to_unvisited = distance_to_point
+                        nearest_point = unvisited_point
+                
+                # calc total and remove from unvisited
+                total_distance += dists[current_point][nearest_point]
+
 
 def foodHeuristic(state, problem):
     """
