@@ -160,20 +160,31 @@ def cornersHeuristic(state, problem):
     # for state and all corners, get distances between
     for x in range(len(points_of_interest)):
         dists.append([])
-        for y in range(len(points_of_interest)-1):
+        for y in range(len(points_of_interest)):
             dists[x].append(distance.manhattan(points_of_interest[x], points_of_interest[y]))
-        dists[x].append(0)  #! return to start is cost 0, not sure if this is bad
+        # dists[x].append(0)  #! return to start is cost 0, not sure if this is bad
     
-    min_dist = open_traveling_saleman(points_of_interest, dists)
+    min_dist = open_traveling_salesman(points_of_interest, dists)
 
     # print to see if i'm making sense
-    print("state: ", state)
+    print("start state: ", state)
     print("points of interest: ", points_of_interest)
     print("visited corners bools: ", visited_corners_bools)
     print("dists: ", dists)
+    print("manhattan of (1,1) and (5,2): ", distance.manhattan((1,1), (5,2)))
+    print("manhattan of (1,12) and (1,1): ", distance.manhattan((1,12), (1,1)))
+    print("manhattan of (1,12) and (28,12): ", distance.manhattan((1,12), (28,12)))
+    print("manhattan of (28,12) and (28,1): ", distance.manhattan((28,12), (28,1)))
+    print("--------")
+    print("manhattan of (1,1) and (5,2): ", distance.manhattan((1,1), (5,2)))
+    print("manhattan of (5,2) and (1,12): ", distance.manhattan((1,12), (1,1)))
+    print("manhattan of (1,12) and (28,12): ", distance.manhattan((1,12), (28,12)))
+    print("manhattan of (28,12) and (28,1): ", distance.manhattan((28,12), (28,1)))
+    print("min_dist: ", min_dist)
+
+
+
     raise ValueError("Stop right there!.")
-
-
 
     return heuristic.null(state, problem)  # Default to trivial solution
 
@@ -181,11 +192,12 @@ def cornersHeuristic(state, problem):
 #   the distance will always be the same!
 def open_traveling_salesman(points_of_interest, dists):
     point_count = len(dists)
+    start_index = len(dists) - 1
     min_dist = float('inf')  # infinity!
 
     for start_point in range(point_count):
         unvisited_points = set(range(point_count))  # set of unvisited points
-        current_point = start_point
+        current_point = start_index
         total_distance = 0
 
         while len(unvisited_points) is not 0:
@@ -200,7 +212,12 @@ def open_traveling_salesman(points_of_interest, dists):
                 
                 # calc total and remove from unvisited
                 total_distance += dists[current_point][nearest_point]
+                unvisited_points.remove(nearest_point)
+                current_point = nearest_point
 
+        min_dist = min(min_dist, total_distance) # get shortest dist
+
+    return min_dist
 
 def foodHeuristic(state, problem):
     """
