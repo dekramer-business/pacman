@@ -14,6 +14,7 @@ from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.base import SearchAgent
+from pacai.core import distance
 
 class CornersProblem(SearchProblem):
     """
@@ -136,6 +137,10 @@ def cornersHeuristic(state, problem):
     # Useful information.
     # corners = problem.corners  # These are the corner coordinates
     # walls = problem.walls  # These are the walls of the maze, as a Grid.
+    #
+    # traveling salesman, with all arcs going back to start = 0.? may cause problems
+    # that way we only calculate the best path from start to all corners being hit
+    # uses manhattan distance
 
     # *** Your Code Here ***
     return heuristic.null(state, problem)  # Default to trivial solution
