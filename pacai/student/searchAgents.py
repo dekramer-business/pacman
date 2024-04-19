@@ -52,7 +52,7 @@ class CornersProblem(SearchProblem):
                 # Construct the successor.
                 successor_cord = (nextx, netxy)
                 successor_cost = 1
-                # 
+                #
                 corners_seen = list(corner)
 
         return successors
@@ -142,7 +142,6 @@ def cornersHeuristic(state, problem):
     start_coords = state[0]
     visited_corners_bools = list(state[1])
     points_of_interest = []
-    dists = []
 
     # get corners we havent visited
     for i in range(len(visited_corners_bools)):
@@ -152,6 +151,16 @@ def cornersHeuristic(state, problem):
     # add start to point of interest
     points_of_interest.append(start_coords)
 
+    # call helper function
+    min_dist = open_traveling_salesman(
+        points_of_interest, len(points_of_interest) - 1)
+    return min_dist
+
+
+# returns 2d array with distances between all points in a list
+def man_distance_between_all_points(points_of_interest):
+    dists = []
+
     # for state and all corners, get distances between
     for x in range(len(points_of_interest)):
         dists.append([])
@@ -159,22 +168,23 @@ def cornersHeuristic(state, problem):
             dists[x].append(distance.manhattan(
                 points_of_interest[x], points_of_interest[y]))
 
-    # call helper function
-    min_dist = open_traveling_salesman(points_of_interest, dists)
-    return min_dist
+    return dists
 
 
-def open_traveling_salesman(points_of_interest, dists):
-    point_count = len(dists)
-    start_index = len(dists) - 1
+# returns min dist between points of interest (list) and starting pt index
+# min dist represents optimal path between all points via manhattan distance
+def open_traveling_salesman(points_of_interest, start_index):
+    point_count = len(points_of_interest)
     min_dist = float('inf')  # infinity!
+
+    dists = man_distance_between_all_points(points_of_interest)
 
     for start_point in range(point_count):
         unvisited_points = set(range(point_count))  # set of unvisited points
         current_point = start_index
         total_distance = 0
 
-        while len(unvisited_points) is not 0:
+        while len(unvisited_points) != 0:
             # find shortest distance to next point
             nearest_point = None
             min_dist_to_unvisited = float('inf')
