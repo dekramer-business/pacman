@@ -13,6 +13,7 @@ from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.base import SearchAgent
+from pacai.student.search import breadthFirstSearch
 from pacai.core import distance
 
 
@@ -306,7 +307,8 @@ class ClosestDotSearchAgent(SearchAgent):
         # problem = AnyFoodSearchProblem(gameState)
 
         # *** Your Code Here ***
-        raise NotImplementedError()
+        problem = AnyFoodSearchProblem(gameState, gameState.getPacmanPosition())
+        return breadthFirstSearch(problem)
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -335,6 +337,14 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         # Store the food for later reference.
         self.food = gameState.getFood()
+    
+    def isGoal(self, state):
+        # print("self.food: ", self.food)
+        (x, y) = state
+        if(self.food[x][y] is True):
+            return True
+        
+        return False
 
 
 class ApproximateSearchAgent(BaseAgent):
