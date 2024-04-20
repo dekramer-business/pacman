@@ -236,7 +236,17 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
 
     # *** Your Code Here ***
-    return heuristic.null(state, problem)  # Default to the null heuristic.
+    foodGridList = foodGrid.asList()
+
+    # add start to point of interest
+    foodGridList.append(position)
+
+    print("foodGridList: ", foodGridList)
+
+    # call helper function
+    min_dist = open_traveling_salesman(
+        foodGridList, len(foodGridList) - 1)
+    return min_dist
 
 
 class ClosestDotSearchAgent(SearchAgent):
