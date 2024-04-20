@@ -9,7 +9,6 @@ import logging
 
 from pacai.core.actions import Actions
 from pacai.core.directions import Directions
-from pacai.core.search import heuristic
 from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
 from pacai.agents.base import BaseAgent
@@ -170,6 +169,19 @@ def man_distance_between_all_points(points_of_interest):
 
     return dists
 
+# returns 2d array with distances between all points in a list
+def euc_distance_between_all_points(points_of_interest):
+    dists = []
+
+    # for state and all corners, get distances between
+    for x in range(len(points_of_interest)):
+        dists.append([])
+        for y in range(len(points_of_interest)):
+            dists[x].append(distance.euclidean(
+                points_of_interest[x], points_of_interest[y]))
+
+    return dists
+
 
 # returns min dist between points of interest (list) and starting pt index
 # min dist represents optimal path between all points via manhattan distance
@@ -181,7 +193,7 @@ def open_traveling_salesman(points_of_interest, start_index):
 
     for start_point in range(point_count):
         unvisited_points = set(range(point_count))  # set of unvisited points
-        current_point = start_index
+        current_point = start_point
         total_distance = 0
 
         while len(unvisited_points) != 0:
