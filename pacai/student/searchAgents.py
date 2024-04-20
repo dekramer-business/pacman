@@ -238,10 +238,14 @@ def foodHeuristic(state, problem):
     # *** Your Code Here ***
     foodGridList = foodGrid.asList()
 
+    # If no food, goal!
+    if len(foodGridList) == 0:
+        return 0
+
     # add start to point of interest
     foodGridList.append(position)
 
-    print("foodGridList: ", foodGridList)
+    # print("foodGridList: ", foodGridList)
 
     # call helper function
     min_dist = open_traveling_salesman(
