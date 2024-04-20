@@ -341,7 +341,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     def isGoal(self, state):
         # print("self.food: ", self.food)
         (x, y) = state
-        if(self.food[x][y] is True):
+        if (self.food[x][y] is True):
             return True
         
         return False
