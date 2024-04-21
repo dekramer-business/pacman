@@ -170,19 +170,6 @@ def man_distance_between_all_points(points_of_interest):
 
     return dists
 
-# returns 2d array with distances between all points in a list
-def euc_distance_between_all_points(points_of_interest):
-    dists = []
-
-    # for state and all corners, get distances between
-    for x in range(len(points_of_interest)):
-        dists.append([])
-        for y in range(len(points_of_interest)):
-            dists[x].append(distance.euclidean(
-                points_of_interest[x], points_of_interest[y]))
-
-    return dists
-
 
 # returns min dist between points of interest (list) and starting pt index
 # min dist represents optimal path between all points via manhattan distance
@@ -255,14 +242,13 @@ def foodHeuristic(state, problem):
     if len(foodGridList) == 0:
         return 0
 
-    # add start to point of interest
-    foodGridList.append(position)
+    min_dist = 0
 
-    # print("foodGridList: ", foodGridList)
-
-    # call helper function
-    min_dist = open_traveling_salesman(
-        foodGridList, len(foodGridList) - 1)
+    for point in foodGridList:
+        maze_dist = distance.maze(position, point, problem.startingGameState)
+        if maze_dist > min_dist:
+            min_dist = maze_dist
+    
     return min_dist
 
 

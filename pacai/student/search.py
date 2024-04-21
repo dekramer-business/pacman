@@ -67,14 +67,14 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first. [p 81]
-    """
-    print("Start: %s" % (str(problem.startingState())))
-    print("Is the start a goal?: %s" %
-          (problem.isGoal(problem.startingState())))
-    print("Start's successors: %s" %
-          (problem.successorStates(problem.startingState())))
-    print("succesor's directions type: ", type(
-        (problem.successorStates(problem.startingState()))[0][1]))
+    # """
+    # print("Start: %s" % (str(problem.startingState())))
+    # print("Is the start a goal?: %s" %
+    #       (problem.isGoal(problem.startingState())))
+    # print("Start's successors: %s" %
+    #       (problem.successorStates(problem.startingState())))
+    # print("succesor's directions type: ", type(
+    #     (problem.successorStates(problem.startingState()))[0][1]))
 
     # *** Your Code Here ***
     if problem.isGoal(problem.startingState()):
