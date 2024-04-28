@@ -58,18 +58,18 @@ class ReflexAgent(BaseAgent):
         oldScore = currentGameState.getScore()
         # newFood = successorGameState.getFood()
         newFoodList = successorGameState.getFood().asList()
-        # newGhostStates = successorGameState.getGhostStates()
+        newGhostStates = successorGameState.getGhostStates()
 
         # print("newFood: ", newFood)
 
         # Get the shorest distance to a ghost, bigger is better
         # Farther is better, squares each maze distance to pre
-        # closestGhost = float('inf')
-        # for newGhostState in newGhostStates:
-        #     newGhostStatePos = newGhostState.getNearestPosition()
-        #     ghostDistanceToPac = distance.maze(newPosition, newGhostStatePos, successorGameState)
-        #     if closestGhost > ghostDistanceToPac:
-        #         closestGhost = ghostDistanceToPac
+        closestGhost = float('inf')
+        for newGhostState in newGhostStates:
+            newGhostStatePos = newGhostState.getNearestPosition()
+            ghostDistanceToPac = distance.maze(newPosition, newGhostStatePos, successorGameState)
+            if closestGhost > ghostDistanceToPac:
+                closestGhost = ghostDistanceToPac
         
         # # Get total squares on grid
         # totalSquares = 0
@@ -80,32 +80,34 @@ class ReflexAgent(BaseAgent):
         # Get total food amounts, less is better
         totalFoodCount = 0
         foodDistToPac = 0
-        closestFood = float('inf')
+        closestFoodDist = float('inf')
         for foodCoord in newFoodList:
             totalFoodCount += 1
-            foodDistToPac = distance.maze(newPosition, foodCoord, successorGameState)
-            if closestFood > foodDistToPac:
-                closestFood = foodDistToPac
+            foodDistToPac = distance.maze(newPosition, foodCoord, currentGameState)
+            if closestFoodDist > foodDistToPac:
+                closestFoodDist = foodDistToPac
         
         if totalFoodCount == 0:
             totalFoodCount = 1
-            closestFood = -float('inf')        
+            closestFoodDist = -float('inf')        
 
-        # eval = (100*(totalSquares/totalFoodCount)) + 10*closestGhost + 50*newScore + closestFood
-        eval = 5*(newScore-oldScore) - 50*(totalFoodCount) - 3 * closestFood
+        # Takes ~80 seconds to play, ~8/10 wins
+        # eval = 5*(newScore-oldScore) - 50*(totalFoodCount) - 3 * closestFoodDist
+
+        # Takes ~70 seconds to play 10/10 wins
+        eval = 4*(newScore-oldScore) + int(closestGhost/2) - 5*(totalFoodCount) - closestFoodDist
+
+        # Takes ~65 seconds, 9/10 wins
+        # eval = int(closestGhost/3) - 4*(totalFoodCount) - 6*closestFoodDist
 
         # print("totalFoodCount: ", totalFoodCount)
         # print("foodDistToPac: ", foodDistToPac)
         # print("eval: ", eval)
-
-        # # *** Your Code Here ***
         # print("newScore: ", newScore)
         # print("newPosition: ", newPosition)
         # print("totalSquares: ", totalSquares)
         # print("totalFoodCount: ", totalFoodCount)
         # print("closestGhost: ", closestGhost)
-
-        # raise Exception("Doug Error")
 
         return eval
 
