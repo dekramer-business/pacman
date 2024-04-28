@@ -2,6 +2,8 @@ import random
 
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.multiagent import MultiAgentSearchAgent
+from pacai.core.search.food import FoodSearchProblem
+from pacai.core import distance
 
 class ReflexAgent(BaseAgent):
     """
@@ -51,14 +53,54 @@ class ReflexAgent(BaseAgent):
         successorGameState = currentGameState.generatePacmanSuccessor(action)
 
         # Useful information you can extract.
-        # newPosition = successorGameState.getPacmanPosition()
-        # oldFood = currentGameState.getFood()
-        # newGhostStates = successorGameState.getGhostStates()
-        # newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
+        newPosition = successorGameState.getPacmanPosition()
+        newScore = successorGameState.getScore()
+        newFood = successorGameState.getFood()
+        newFoodList = successorGameState.getFood().asList()
+        newGhostStates = successorGameState.getGhostStates()
+
+        print("newFood: ", newFood)
+
+        # Get the shorest distance to a ghost, bigger is better
+        # Farther is better, squares each maze distance to pre
+        closestGhost = float('inf')
+        for newGhostState in newGhostStates:
+            newGhostStatePos = newGhostState.getNearestPosition()
+            ghostDistanceToPac = distance.maze(newPosition, newGhostStatePos, successorGameState)
+            if closestGhost > ghostDistanceToPac:
+                closestGhost = ghostDistanceToPac
+        
+        # Get total squares on grid
+        totalSquares = 0
+        for row in newFood:
+            for col in row:
+                totalSquares += 1
+
+        # Get total food amounts, less is better
+        totalFoodCount = 0
+        closestFood = float('inf')
+        for foodCoord in newFoodList:
+            totalFoodCount += 1
+            foodDistToPac = distance.maze(newPosition, foodCoord, successorGameState)
+            if closestFood > foodDistToPac:
+                closestFood = foodDistToPac
+        
+        if totalFoodCount == 0:
+            totalFoodCount = 1
+            totalSquares = float('inf')
+
+        eval = (100*(totalSquares/totalFoodCount)) + 10*closestGhost + 50*newScore + closestFood
 
         # *** Your Code Here ***
+        print("newScore: ", newScore)
+        print("newPosition: ", newPosition)
+        print("totalSquares: ", totalSquares)
+        print("totalFoodCount: ", totalFoodCount)
+        print("closestGhost: ", closestGhost)
 
-        return successorGameState.getScore()
+        # raise Exception("Doug Error")
+
+        return eval
 
 class MinimaxAgent(MultiAgentSearchAgent):
     """
