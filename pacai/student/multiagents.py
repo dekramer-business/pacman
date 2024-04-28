@@ -55,11 +55,12 @@ class ReflexAgent(BaseAgent):
         # Useful information you can extract.
         newPosition = successorGameState.getPacmanPosition()
         newScore = successorGameState.getScore()
+        oldScore = currentGameState.getScore()
         newFood = successorGameState.getFood()
         newFoodList = successorGameState.getFood().asList()
         newGhostStates = successorGameState.getGhostStates()
 
-        print("newFood: ", newFood)
+        # print("newFood: ", newFood)
 
         # Get the shorest distance to a ghost, bigger is better
         # Farther is better, squares each maze distance to pre
@@ -70,14 +71,15 @@ class ReflexAgent(BaseAgent):
             if closestGhost > ghostDistanceToPac:
                 closestGhost = ghostDistanceToPac
         
-        # Get total squares on grid
-        totalSquares = 0
-        for row in newFood:
-            for col in row:
-                totalSquares += 1
+        # # Get total squares on grid
+        # totalSquares = 0
+        # for row in newFood:
+        #     for col in row:
+        #         totalSquares += 1
 
         # Get total food amounts, less is better
         totalFoodCount = 0
+        foodDistToPac = 0
         closestFood = float('inf')
         for foodCoord in newFoodList:
             totalFoodCount += 1
@@ -87,16 +89,23 @@ class ReflexAgent(BaseAgent):
         
         if totalFoodCount == 0:
             totalFoodCount = 1
-            totalSquares = float('inf')
+            closestFood = -float('inf')
+        
+        
 
-        eval = (100*(totalSquares/totalFoodCount)) + 10*closestGhost + 50*newScore + closestFood
+        # eval = (100*(totalSquares/totalFoodCount)) + 10*closestGhost + 50*newScore + closestFood
+        eval = 5*(newScore-oldScore) - 50*(totalFoodCount) - 3 * closestFood
 
-        # *** Your Code Here ***
-        print("newScore: ", newScore)
-        print("newPosition: ", newPosition)
-        print("totalSquares: ", totalSquares)
         print("totalFoodCount: ", totalFoodCount)
-        print("closestGhost: ", closestGhost)
+        print("foodDistToPac: ", foodDistToPac)
+        print("eval: ", eval)
+
+        # # *** Your Code Here ***
+        # print("newScore: ", newScore)
+        # print("newPosition: ", newPosition)
+        # print("totalSquares: ", totalSquares)
+        # print("totalFoodCount: ", totalFoodCount)
+        # print("closestGhost: ", closestGhost)
 
         # raise Exception("Doug Error")
 
