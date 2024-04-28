@@ -96,9 +96,9 @@ class ReflexAgent(BaseAgent):
         # eval = (100*(totalSquares/totalFoodCount)) + 10*closestGhost + 50*newScore + closestFood
         eval = 5*(newScore-oldScore) - 50*(totalFoodCount) - 3 * closestFood
 
-        print("totalFoodCount: ", totalFoodCount)
-        print("foodDistToPac: ", foodDistToPac)
-        print("eval: ", eval)
+        # print("totalFoodCount: ", totalFoodCount)
+        # print("foodDistToPac: ", foodDistToPac)
+        # print("eval: ", eval)
 
         # # *** Your Code Here ***
         # print("newScore: ", newScore)
