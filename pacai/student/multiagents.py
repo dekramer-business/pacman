@@ -140,6 +140,20 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
+    
+    def getAction(self, state):
+        numAgents = state.getNumAgents() # ghosts + pac
+
+        for agent in range(numAgents):
+            legalActions = state.getLegalActions(agent)
+            print("agent: ", agent, " legalActions: ", legalActions)
+
+        print("numAgents: ", numAgents)
+        
+
+        return 'Stop'
+    
+    
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
