@@ -2,8 +2,8 @@ import random
 
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.multiagent import MultiAgentSearchAgent
-from pacai.core.search.food import FoodSearchProblem
 from pacai.core import distance
+
 
 class ReflexAgent(BaseAgent):
     """
@@ -33,10 +33,13 @@ class ReflexAgent(BaseAgent):
         legalMoves = gameState.getLegalActions()
 
         # Choose one of the best actions.
-        scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
+        scores = [self.evaluationFunction(
+            gameState, action) for action in legalMoves]
         bestScore = max(scores)
-        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
-        chosenIndex = random.choice(bestIndices)  # Pick randomly among the best.
+        bestIndices = [index for index in range(
+            len(scores)) if scores[index] == bestScore]
+        # Pick randomly among the best.
+        chosenIndex = random.choice(bestIndices)
 
         return legalMoves[chosenIndex]
 
@@ -67,10 +70,11 @@ class ReflexAgent(BaseAgent):
         closestGhost = float('inf')
         for newGhostState in newGhostStates:
             newGhostStatePos = newGhostState.getNearestPosition()
-            ghostDistanceToPac = distance.maze(newPosition, newGhostStatePos, successorGameState)
+            ghostDistanceToPac = distance.maze(
+                newPosition, newGhostStatePos, successorGameState)
             if closestGhost > ghostDistanceToPac:
                 closestGhost = ghostDistanceToPac
-        
+
         # # Get total squares on grid
         # totalSquares = 0
         # for row in newFood:
@@ -83,19 +87,21 @@ class ReflexAgent(BaseAgent):
         closestFoodDist = float('inf')
         for foodCoord in newFoodList:
             totalFoodCount += 1
-            foodDistToPac = distance.maze(newPosition, foodCoord, currentGameState)
+            foodDistToPac = distance.maze(
+                newPosition, foodCoord, currentGameState)
             if closestFoodDist > foodDistToPac:
                 closestFoodDist = foodDistToPac
-        
+
         if totalFoodCount == 0:
             totalFoodCount = 1
-            closestFoodDist = -float('inf')        
+            closestFoodDist = -float('inf')
 
         # Takes ~80 seconds to play, ~8/10 wins
         # eval = 5*(newScore-oldScore) - 50*(totalFoodCount) - 3 * closestFoodDist
 
         # Takes ~70 seconds to play 10/10 wins
-        eval = 4*(newScore-oldScore) + int(closestGhost/2) - 5*(totalFoodCount) - closestFoodDist
+        eval = 4 * (newScore-oldScore) + int(closestGhost / 2) - \
+            5 * (totalFoodCount) - closestFoodDist
 
         # Takes ~65 seconds, 9/10 wins
         # eval = int(closestGhost/3) - 4*(totalFoodCount) - 6*closestFoodDist
@@ -110,6 +116,7 @@ class ReflexAgent(BaseAgent):
         # print("closestGhost: ", closestGhost)
 
         return eval
+
 
 class MinimaxAgent(MultiAgentSearchAgent):
     """
@@ -140,23 +147,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
-    
+
     def getAction(self, state):
-        numAgents = state.getNumAgents() # ghosts + pac
+        numAgents = state.getNumAgents()  # ghosts + pac
 
-        for agent in range(numAgents):
-            legalActions = state.getLegalActions(agent)
-        #     print("agent: ", agent, " legalActions: ", legalActions)
+        (action, cost) = minimax(0, numAgents, 0,
+                                 self.getTreeDepth(), self.getEvaluationFunction(), state)
 
-        # print("numAgents: ", numAgents)
-        # print("treeDepth: ", self.getTreeDepth())
-
-        (action, cost) = minimax(0, numAgents, 0, self.getTreeDepth(), self.getEvaluationFunction(), state)
-
-        print("action: ", action)
-        print("cost: ", cost)
-        print("evalfunc on last action: ", self.getEvaluationFunction()(state.generateSuccessor(0, action)))
-        # print("evalfunc on last going west: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'West')))
         return action
 
 
@@ -172,9 +169,10 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
     if agentNum == 0:  # max, pac!
         bestActionMMValue = -float('inf')
         for action in agentsLegalActions:
-            if action is 'Stop':
+            if action == 'Stop':
                 continue
-            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccessor(agentNum, action))[1]
+            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth,
+                                    evalFunc, state.generateSuccessor(agentNum, action))[1]
             # print("action, actionMMValue: ", (action, actionMMValue))
             if actionMMValue > bestActionMMValue:
                 bestActionMMValue = actionMMValue
@@ -186,31 +184,16 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
 
         bestActionMMValue = float('inf')
         for action in agentsLegalActions:
-            if action is 'Stop':
+            if action == 'Stop':
                 continue
-            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccessor(agentNum, action))[1]
+            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth,
+                                    evalFunc, state.generateSuccessor(agentNum, action))[1]
             if actionMMValue < bestActionMMValue:
                 bestActionMMValue = actionMMValue
                 bestAction = action
 
-    # print("agentNum: ", agentNum)
-    # print("agentCount: ", agentCount)
-    # print("currDepth: ", currDepth)
-    # print("treeDepth: ", treeDepth)
-    # print("state: ", state)
-    # print("bestAction: ", bestAction)
-
-    # print("----------------------------")
-    # if agentNum == 0:
-    #     for action in agentsLegalActions:
-    #         if action is 'Stop':
-    #             continue
-    #         print("legal action: ", action)
-    #         print("eval action: ", evalFunc(state.generateSuccessor(agentNum, action)))
-    # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-
     return (bestAction, bestActionMMValue)
-    
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -226,6 +209,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -244,6 +228,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
 
+
 def betterEvaluationFunction(currentGameState):
     """
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable evaluation function.
@@ -252,6 +237,7 @@ def betterEvaluationFunction(currentGameState):
     """
 
     return currentGameState.getScore()
+
 
 class ContestAgent(MultiAgentSearchAgent):
     """
