@@ -150,7 +150,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, state):
         (action, cost) = self._minimax(0, 0, state)
-
         return action
 
     def _minimax(self, agentNum, currDepth, state):
@@ -205,6 +204,58 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
+    
+    def getAction(self, state):
+        (action, cost) = self._minimax(0, 0, state, -float('inf'), float('inf'))
+        return action
+
+    def _minimax(self, agentNum, currDepth, state, alpha, beta):
+        # We hit max depth!
+        if currDepth == self.getTreeDepth() or state.isLose() or state.isWin():
+            return ('Stop', self.getEvaluationFunction()(state))
+
+        bestActionMMValue = None
+        bestAction = None
+        nextAgentNum = agentNum + 1
+        agentsLegalActions = state.getLegalActions(agentNum)
+        if agentNum == 0:  # max, pac!
+            bestActionMMValue = -float('inf')
+            for action in agentsLegalActions:
+                if action == 'Stop':
+                    continue
+                actionMMValue = self._minimax(nextAgentNum, currDepth,
+                                        state.generateSuccessor(agentNum, action), alpha, beta)[1]
+                # print("action, actionMMValue: ", (action, actionMMValue))
+                if actionMMValue > bestActionMMValue:
+                    bestActionMMValue = actionMMValue
+                    bestAction = action
+                
+                # alpha-beta pruning!
+                if bestActionMMValue >= beta:
+                    return (bestAction, bestActionMMValue)
+                alpha = max(alpha, bestActionMMValue)
+                
+        else:  # min, not pacman
+            if nextAgentNum == state.getNumAgents():
+                nextAgentNum = 0  # maxs turn
+                currDepth += 1  # all agents have gone, increment depth
+
+            bestActionMMValue = float('inf')
+            for action in agentsLegalActions:
+                if action == 'Stop':
+                    continue
+                actionMMValue = self._minimax(nextAgentNum, currDepth,
+                                        state.generateSuccessor(agentNum, action), alpha, beta)[1]
+                if actionMMValue < bestActionMMValue:
+                    bestActionMMValue = actionMMValue
+                    bestAction = action
+                
+                # alpha-beta pruning!
+                if bestActionMMValue <= alpha:
+                    return (bestAction, bestActionMMValue)
+                beta = max(beta, bestActionMMValue)
+
+        return (bestAction, bestActionMMValue)
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
