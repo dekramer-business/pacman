@@ -237,7 +237,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 
         else:  # min, not pacman
             if nextAgentNum == state.getNumAgents():
-                nextAgentNum = 0  # maxs turn
+                nextAgentNum = 0  # max's turn
                 currDepth += 1  # all agents have gone, increment depth
 
             bestActionMMValue = float('inf')
