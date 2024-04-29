@@ -295,7 +295,6 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                     continue
                 actionMMValue = self._minimax(nextAgentNum, currDepth,
                                         state.generateSuccessor(agentNum, action))[1]
-                # print("action, actionMMValue: ", (action, actionMMValue))
                 if actionMMValue > bestActionMMValue:
                     bestActionMMValue = actionMMValue
                     bestAction = action
