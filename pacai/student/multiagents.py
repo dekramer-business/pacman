@@ -146,17 +146,17 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         for agent in range(numAgents):
             legalActions = state.getLegalActions(agent)
-            print("agent: ", agent, " legalActions: ", legalActions)
+        #     print("agent: ", agent, " legalActions: ", legalActions)
 
-        print("numAgents: ", numAgents)
-        print("treeDepth: ", self.getTreeDepth())
+        # print("numAgents: ", numAgents)
+        # print("treeDepth: ", self.getTreeDepth())
 
         (action, cost) = minimax(0, numAgents, 0, self.getTreeDepth(), self.getEvaluationFunction(), state)
 
-        print("action: ", action)
-        print("cost: ", cost)
-        print("evalfunc on last going east: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'East')))
-        print("evalfunc on last going west: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'West')))
+        # print("action: ", action)
+        # print("cost: ", cost)
+        # print("evalfunc on last going east: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'East')))
+        # print("evalfunc on last going west: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'West')))
         return action
 
 
@@ -191,12 +191,12 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
                 bestActionMMValue = actionMMValue
                 bestAction = action
 
-    print("agentNum: ", agentNum)
-    print("agentCount: ", agentCount)
-    print("currDepth: ", currDepth)
-    print("treeDepth: ", treeDepth)
+    # print("agentNum: ", agentNum)
+    # print("agentCount: ", agentCount)
+    # print("currDepth: ", currDepth)
+    # print("treeDepth: ", treeDepth)
     # print("state: ", state)
-    print("bestAction: ", bestAction)
+    # print("bestAction: ", bestAction)
 
     return (bestAction, bestActionMMValue)
     
