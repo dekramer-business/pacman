@@ -149,10 +149,41 @@ class MinimaxAgent(MultiAgentSearchAgent):
             print("agent: ", agent, " legalActions: ", legalActions)
 
         print("numAgents: ", numAgents)
-        
+        print("treeDepth: ", self.getTreeDepth())
 
+        
         return 'Stop'
-    
+
+
+def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
+
+    if currDepth == treeDepth:
+        return evalFunc(state)
+
+    # max, pac!
+    if agentNum == 0:
+        nextAgentNum = agentNum + 1
+
+        agentsLegalActions = state.getLegalActions(agentNum)
+        bestActionMinMax = -float('inf')
+        for action in agentsLegalActions:
+            actionMinMax = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))
+            if actionMinMax > bestActionMinMax:
+                bestActionMinMax = actionMinMax
+        return bestActionMinMax
+    else:  # min, not pacman
+        nextAgentNum = agentNum + 1
+        if nextAgentNum == agentCount:
+            nextAgentNum = 0  # maxs turn
+            currDepth += 1  # all agents have gone, increment depth
+
+        agentsLegalActions = state.getLegalActions(agentNum)
+        bestActionMinMax = float('inf')
+        for action in agentsLegalActions:
+            actionMinMax = minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))
+            if actionMinMax < bestActionMinMax:
+                bestActionMinMax = actionMinMax
+        return bestActionMinMax
     
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
