@@ -324,8 +324,39 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
+    position = currentGameState.getPacmanPosition()
+    score = currentGameState.getScore()
+    foodList = currentGameState.getFood().asList()
+    ghostStates = currentGameState.getGhostStates()
 
-    return currentGameState.getScore()
+    # Get the shorest distance to a ghost, bigger is better
+    # Farther is better, squares each maze distance to pre
+    closestGhost = float('inf')
+    for newGhostState in ghostStates:
+        newGhostStatePos = newGhostState.getNearestPosition()
+        ghostDistanceToPac = distance.maze(
+            position, newGhostStatePos, currentGameState)
+        if closestGhost > ghostDistanceToPac:
+            closestGhost = ghostDistanceToPac
+
+    # Get total food amounts, less is better
+    totalFoodCount = 0
+    foodDistToPac = 0
+    closestFoodDist = float('inf')
+    for foodCoord in foodList:
+        totalFoodCount += 1
+        foodDistToPac = distance.maze(
+            position, foodCoord, currentGameState)
+        if closestFoodDist > foodDistToPac:
+            closestFoodDist = foodDistToPac
+
+    if totalFoodCount == 0:
+        totalFoodCount = 1
+        closestFoodDist = -float('inf')
+
+    # Takes ~70 seconds to play 10/10 wins
+    eval = 4 * score + int(closestGhost / 2) - 5 * (totalFoodCount) - closestFoodDist
+    return eval
 
 
 class ContestAgent(MultiAgentSearchAgent):
