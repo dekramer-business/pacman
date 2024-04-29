@@ -100,7 +100,7 @@ class ReflexAgent(BaseAgent):
         # eval = 5*(newScore-oldScore) - 50*(totalFoodCount) - 3 * closestFoodDist
 
         # Takes ~70 seconds to play 10/10 wins
-        eval = 4 * (newScore-oldScore) + int(closestGhost / 2) - \
+        eval = 4 * (newScore - oldScore) + int(closestGhost / 2) - \
             5 * (totalFoodCount) - closestFoodDist
 
         # Takes ~65 seconds, 9/10 wins
