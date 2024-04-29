@@ -151,16 +151,24 @@ class MinimaxAgent(MultiAgentSearchAgent):
         print("numAgents: ", numAgents)
         print("treeDepth: ", self.getTreeDepth())
 
+        (action, cost) = minimax(0, numAgents, 0, self.getTreeDepth(), self.getEvaluationFunction(), state)
 
-        
-        return minimax(0, numAgents, 0, self.getTreeDepth(), self.getEvaluationFunction(), state)[0]
+        print("action: ", action)
+        print("cost: ", cost)
+
+        return action
 
 
 def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
+    print("agentNum: ", agentNum)
+    print("agentCount: ", agentCount)
+    print("currDepth: ", currDepth)
+    print("treeDepth: ", treeDepth)
+    print("state: ", state)
 
     # We hit max depth!
     if currDepth == treeDepth:
-        return evalFunc(state)
+        return ('Stop', evalFunc(state))
 
     # max, pac!
     bestActionMMValue = None
@@ -171,7 +179,7 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
         agentsLegalActions = state.getLegalActions(agentNum)
         bestActionMMValue = -float('inf')
         for action in agentsLegalActions:
-            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))[1]
+            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccessor(agentNum, action))[1]
             if actionMMValue > bestActionMMValue:
                 bestActionMMValue = actionMMValue
                 bestAction = action
@@ -184,7 +192,7 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
         agentsLegalActions = state.getLegalActions(agentNum)
         bestActionMMValue = float('inf')
         for action in agentsLegalActions:
-            actionMMValue = minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))[1]
+            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccessor(agentNum, action))[1]
             if actionMMValue < bestActionMMValue:
                 bestActionMMValue = actionMMValue
                 bestAction = action
