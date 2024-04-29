@@ -155,25 +155,19 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         print("action: ", action)
         print("cost: ", cost)
-
+        print("evalfunc on last going east: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'East')))
+        print("evalfunc on last going west: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'West')))
         return action
 
 
 def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
-    print("agentNum: ", agentNum)
-    print("agentCount: ", agentCount)
-    print("currDepth: ", currDepth)
-    print("treeDepth: ", treeDepth)
-    print("state: ", state)
-
     # We hit max depth!
-    if currDepth == treeDepth:
+    if currDepth == treeDepth or state.isLose() or state.isWin():
         return ('Stop', evalFunc(state))
 
-    # max, pac!
     bestActionMMValue = None
     bestAction = None
-    if agentNum == 0:
+    if agentNum == 0:  # max, pac!
         nextAgentNum = agentNum + 1
 
         agentsLegalActions = state.getLegalActions(agentNum)
@@ -196,6 +190,13 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
             if actionMMValue < bestActionMMValue:
                 bestActionMMValue = actionMMValue
                 bestAction = action
+
+    print("agentNum: ", agentNum)
+    print("agentCount: ", agentCount)
+    print("currDepth: ", currDepth)
+    print("treeDepth: ", treeDepth)
+    # print("state: ", state)
+    print("bestAction: ", bestAction)
 
     return (bestAction, bestActionMMValue)
     
