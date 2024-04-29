@@ -274,6 +274,49 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
+    
+    def getAction(self, state):
+        (action, cost) = self._minimax(0, 0, state)
+        return action
+
+    def _minimax(self, agentNum, currDepth, state):
+        # We hit max depth!
+        if currDepth == self.getTreeDepth() or state.isLose() or state.isWin():
+            return ('Stop', self.getEvaluationFunction()(state))
+
+        bestActionMMValue = None
+        bestAction = None
+        nextAgentNum = agentNum + 1
+        agentsLegalActions = state.getLegalActions(agentNum)
+        if agentNum == 0:  # max, pac!
+            bestActionMMValue = -float('inf')
+            for action in agentsLegalActions:
+                if action == 'Stop':
+                    continue
+                actionMMValue = self._minimax(nextAgentNum, currDepth,
+                                        state.generateSuccessor(agentNum, action))[1]
+                # print("action, actionMMValue: ", (action, actionMMValue))
+                if actionMMValue > bestActionMMValue:
+                    bestActionMMValue = actionMMValue
+                    bestAction = action
+        else:  # chance, not pacman
+            if nextAgentNum == state.getNumAgents():
+                nextAgentNum = 0  # maxs turn
+                currDepth += 1  # all agents have gone, increment depth
+
+            bestActionMMValue = 0
+            numActions = 0
+            for action in agentsLegalActions:
+                if action == 'Stop':
+                    continue
+                numActions += 1
+                actionMMValue = self._minimax(nextAgentNum, currDepth,
+                                        state.generateSuccessor(agentNum, action))[1]
+                bestActionMMValue += actionMMValue
+            # get average
+            bestActionMMValue /= numActions
+
+        return (bestAction, bestActionMMValue)
 
 
 def betterEvaluationFunction(currentGameState):
