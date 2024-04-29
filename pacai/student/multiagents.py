@@ -151,26 +151,30 @@ class MinimaxAgent(MultiAgentSearchAgent):
         print("numAgents: ", numAgents)
         print("treeDepth: ", self.getTreeDepth())
 
+
         
-        return 'Stop'
+        return minimax(0, numAgents, 0, self.getTreeDepth(), self.getEvaluationFunction(), state)[0]
 
 
 def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
 
+    # We hit max depth!
     if currDepth == treeDepth:
         return evalFunc(state)
 
     # max, pac!
+    bestActionMMValue = None
+    bestAction = None
     if agentNum == 0:
         nextAgentNum = agentNum + 1
 
         agentsLegalActions = state.getLegalActions(agentNum)
-        bestActionMinMax = -float('inf')
+        bestActionMMValue = -float('inf')
         for action in agentsLegalActions:
-            actionMinMax = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))
-            if actionMinMax > bestActionMinMax:
-                bestActionMinMax = actionMinMax
-        return bestActionMinMax
+            actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))[1]
+            if actionMMValue > bestActionMMValue:
+                bestActionMMValue = actionMMValue
+                bestAction = action
     else:  # min, not pacman
         nextAgentNum = agentNum + 1
         if nextAgentNum == agentCount:
@@ -178,12 +182,14 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
             currDepth += 1  # all agents have gone, increment depth
 
         agentsLegalActions = state.getLegalActions(agentNum)
-        bestActionMinMax = float('inf')
+        bestActionMMValue = float('inf')
         for action in agentsLegalActions:
-            actionMinMax = minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))
-            if actionMinMax < bestActionMinMax:
-                bestActionMinMax = actionMinMax
-        return bestActionMinMax
+            actionMMValue = minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccesor(agentNum, action))[1]
+            if actionMMValue < bestActionMMValue:
+                bestActionMMValue = actionMMValue
+                bestAction = action
+
+    return (bestAction, bestActionMMValue)
     
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
