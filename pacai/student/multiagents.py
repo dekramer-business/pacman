@@ -155,7 +155,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         print("action: ", action)
         print("cost: ", cost)
-        # print("evalfunc on last going east: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'East')))
+        print("evalfunc on last action: ", self.getEvaluationFunction()(state.generateSuccessor(0, action)))
         # print("evalfunc on last going west: ", self.getEvaluationFunction()(state.generateSuccessor(0, 'West')))
         return action
 
@@ -167,27 +167,23 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
 
     bestActionMMValue = None
     bestAction = None
+    nextAgentNum = agentNum + 1
+    agentsLegalActions = state.getLegalActions(agentNum)
     if agentNum == 0:  # max, pac!
-        nextAgentNum = agentNum + 1
-
-        agentsLegalActions = state.getLegalActions(agentNum)
-        if len(agentsLegalActions) == 0: print("no legal actions")
         bestActionMMValue = -float('inf')
-
         for action in agentsLegalActions:
             if action is 'Stop':
                 continue
             actionMMValue = minimax(nextAgentNum, agentCount, currDepth, treeDepth, evalFunc, state.generateSuccessor(agentNum, action))[1]
+            # print("action, actionMMValue: ", (action, actionMMValue))
             if actionMMValue > bestActionMMValue:
                 bestActionMMValue = actionMMValue
                 bestAction = action
     else:  # min, not pacman
-        nextAgentNum = agentNum + 1
         if nextAgentNum == agentCount:
             nextAgentNum = 0  # maxs turn
             currDepth += 1  # all agents have gone, increment depth
 
-        agentsLegalActions = state.getLegalActions(agentNum)
         bestActionMMValue = float('inf')
         for action in agentsLegalActions:
             if action is 'Stop':
@@ -204,14 +200,14 @@ def minimax(agentNum, agentCount, currDepth, treeDepth, evalFunc, state):
     # print("state: ", state)
     # print("bestAction: ", bestAction)
 
-    print("----------------------------")
-    if agentNum == 0:
-        for action in agentsLegalActions:
-            if action is 'Stop':
-                continue
-            print("legal action: ", action)
-            print("eval action: ", evalFunc(state.generateSuccessor(agentNum, action)))
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    # print("----------------------------")
+    # if agentNum == 0:
+    #     for action in agentsLegalActions:
+    #         if action is 'Stop':
+    #             continue
+    #         print("legal action: ", action)
+    #         print("eval action: ", evalFunc(state.generateSuccessor(agentNum, action)))
+    # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     return (bestAction, bestActionMMValue)
     
