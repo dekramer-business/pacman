@@ -87,8 +87,10 @@ class ReflexAgent(BaseAgent):
         closestFoodDist = float('inf')
         for foodCoord in newFoodList:
             totalFoodCount += 1
-            foodDistToPac = distance.maze(
-                newPosition, foodCoord, currentGameState)
+            # foodDistToPac = distance.maze(
+            #     newPosition, foodCoord, currentGameState)
+            foodDistToPac = distance.manhattan(
+                newPosition, foodCoord)
             if closestFoodDist > foodDistToPac:
                 closestFoodDist = foodDistToPac
 
@@ -334,8 +336,10 @@ def betterEvaluationFunction(currentGameState):
     closestGhost = float('inf')
     for newGhostState in ghostStates:
         newGhostStatePos = newGhostState.getNearestPosition()
-        ghostDistanceToPac = distance.maze(
-            position, newGhostStatePos, currentGameState)
+        # ghostDistanceToPac = distance.maze(
+        #     position, newGhostStatePos, currentGameState)
+        ghostDistanceToPac = distance.manhattan(
+            position, newGhostStatePos)
         if closestGhost > ghostDistanceToPac:
             closestGhost = ghostDistanceToPac
 
@@ -345,8 +349,10 @@ def betterEvaluationFunction(currentGameState):
     closestFoodDist = float('inf')
     for foodCoord in foodList:
         totalFoodCount += 1
-        foodDistToPac = distance.maze(
-            position, foodCoord, currentGameState)
+        # foodDistToPac = distance.maze(
+        #     position, foodCoord, currentGameState)
+        foodDistToPac = distance.manhattan(
+            position, foodCoord)
         if closestFoodDist > foodDistToPac:
             closestFoodDist = foodDistToPac
 
@@ -356,6 +362,7 @@ def betterEvaluationFunction(currentGameState):
 
     # Takes ~70 seconds to play 10/10 wins
     eval = 4 * score + int(closestGhost / 2) - 5 * (totalFoodCount) - closestFoodDist
+    # eval = 4 * score - 5 * (totalFoodCount) - closestFoodDist
     return eval
 
 
