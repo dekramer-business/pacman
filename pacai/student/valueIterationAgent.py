@@ -45,7 +45,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         states = mdp.getStates()
         for i in range(0, iters):  # for each iteration
             for state in states:  # for each state
-                max_val = 0
+                max_val = None
                 for action in mdp.getPossibleActions(state):
                     avg_val = 0
                     for (next_state, prob) in mdp.getTransitionStatesAndProbs(state, action):
@@ -54,12 +54,14 @@ class ValueIterationAgent(ValueEstimationAgent):
                         #     print("action: ", action)
                         #     print("next_state, prob: ", next_state, prob)
                         #     print("mdp.getReward(state, action, next_state): ", mdp.getReward(state, action, next_state))
-                    if avg_val > max_val:
+                    if (max_val is None) or (avg_val > max_val):
                         max_val = avg_val
                     # if i == 99 and state == (2,2):
                     #     # print("action: ", action)
                     #     print("avg_val: ", avg_val)
                     #     print("max_val: ", max_val)
+                if max_val is None:
+                    max_val = 0
                 self.values[state] = max_val
             oldValues.update(self.values)
             # print("oldValues: ", oldValues)
@@ -75,15 +77,18 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
 
         best_action = None
-        max_val = 0
+        max_val = None
+        # print("------------- State: ", state)
         for action in self.mdp.getPossibleActions(state):
+            # print("action: ", action)
             avg_val = 0
             for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
                 avg_val += prob * (self.mdp.getReward(state, action, next_state) + (self.discountRate * self.values.get(next_state, 0)))
-            if avg_val > max_val:
+            if (max_val is None) or (avg_val > max_val):
                 max_val = avg_val
                 best_action = action
 
+        # print("max_val: ", max_val)
         return best_action
 
     def getValue(self, state):
