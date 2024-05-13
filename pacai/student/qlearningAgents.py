@@ -57,16 +57,10 @@ class QLearningAgent(ReinforcementAgent):
         Note that you should never call this function, it will be called on your behalf.
         """
 
-        maxNextState = None
-        for action in self.getLegalActions(nextState):
-            avg_val = self.qvalues.get((nextState, action), 0.0)
-            if (maxNextState is None) or (avg_val > maxNextState):
-                maxNextState = avg_val
-        if maxNextState is None:  # Catches terminal states
-            maxNextState = 0
-
-        curr_val = self.qvalues.get((state, action), 0.0)
-        self.qvalues[(state, action)] = (1-self.alpha) * curr_val + (self.alpha * (reward + (self.discountRate * maxNextState) - curr_val))
+        sample = reward + self.getDiscountRate() * self.getValue(nextState)
+        a = (1-self.getAlpha())
+        curr_val = self.getQValue(state, action)
+        self.qvalues[(state, action)] = a * curr_val + (self.getAlpha() * sample)
 
     def getQValue(self, state, action):
         """
@@ -89,16 +83,10 @@ class QLearningAgent(ReinforcementAgent):
         which returns the actual best action.
         Whereas this method returns the value of the best action.
         """
-
-        maxAction = None
-        for action in self.getLegalActions(state):
-            avg_val = self.getQValue(state, action)
-            if (maxAction is None) or (avg_val > maxAction):
-                maxAction = avg_val
-        if max_val is None:  # Catches terminal states
-            max_val = 0
-
-        return max_val
+        legalActions = self.getLegalActions(state)
+        if not legalActions:
+            return 0.0
+        return max(self.getQValue(state, action) for action in legalActions)
 
     def getAction(self, state):
         """
