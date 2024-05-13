@@ -70,8 +70,8 @@ class ReflexAgent(BaseAgent):
         closestGhost = float('inf')
         for newGhostState in newGhostStates:
             newGhostStatePos = newGhostState.getNearestPosition()
-            ghostDistanceToPac = distance.maze(
-                newPosition, newGhostStatePos, successorGameState)
+            ghostDistanceToPac = distance.manhattan(
+                newPosition, newGhostStatePos)
             if closestGhost > ghostDistanceToPac:
                 closestGhost = ghostDistanceToPac
 
