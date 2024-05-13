@@ -37,12 +37,13 @@ def question3a():
 def question3b():
     """
     High noise means they fear the cliff
-    Low discount means they choose farther
+    Med discount means they may choose closer
+    Negative LR means to end it fast! Choose close
     """
 
-    answerDiscount = 0.9
-    answerNoise = 0.5
-    answerLivingReward = 0.0
+    answerDiscount = 0.5
+    answerNoise = 0.4
+    answerLivingReward = -.5
 
     return answerDiscount, answerNoise, answerLivingReward
 
@@ -72,14 +73,15 @@ def question3d():
 
 def question3e():
     """
-    [Enter a description of what you did here.]
+    High noise means avoid cliff
+    Largest living reward means never exit
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerNoise = 0.4
+    answerLivingReward = 15
 
-    return NOT_POSSIBLE
+    return answerDiscount, answerNoise, answerLivingReward
 
 def question6():
     """

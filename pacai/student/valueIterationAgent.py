@@ -49,9 +49,8 @@ class ValueIterationAgent(ValueEstimationAgent):
                 for action in mdp.getPossibleActions(state):
                     avg_val = 0
                     for (next_state, prob) in mdp.getTransitionStatesAndProbs(state, action):
-                        avg_val += prob * \
-                            (mdp.getReward(state, action, next_state) +
-                             (discountRate * oldValues.get(next_state, 0)))
+                        avg_val += prob * (mdp.getReward(state, action, next_state)
+                             + (discountRate * oldValues.get(next_state, 0)))
 
                     if (max_val is None) or (avg_val > max_val):  # Set max val on first pass
                         max_val = avg_val
@@ -74,8 +73,8 @@ class ValueIterationAgent(ValueEstimationAgent):
         for action in self.mdp.getPossibleActions(state):
             avg_val = 0
             for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
-                avg_val += prob * (self.mdp.getReward(state, action, next_state) +
-                                   (self.discountRate * self.values.get(next_state, 0)))
+                avg_val += prob * (self.mdp.getReward(state, action, next_state)
+                                   + (self.discountRate * self.values.get(next_state, 0)))
             if (max_val is None) or (avg_val > max_val):
                 max_val = avg_val
                 best_action = action
@@ -107,7 +106,7 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         qval = 0
         for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
-            qval += prob * (self.mdp.getReward(state, action, next_state) +
-                            (self.discountRate * self.values.get(next_state, 0)))
+            qval += prob * (self.mdp.getReward(state, action, next_state)
+                            + (self.discountRate * self.values.get(next_state, 0)))
 
         return qval
