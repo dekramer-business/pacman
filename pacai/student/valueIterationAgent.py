@@ -1,5 +1,6 @@
 from pacai.agents.learning.value import ValueEstimationAgent
 
+
 class ValueIterationAgent(ValueEstimationAgent):
     """
     A value iteration agent.
@@ -30,17 +31,16 @@ class ValueIterationAgent(ValueEstimationAgent):
     you should return None.
     """
 
-    def __init__(self, index, mdp, discountRate = 0.9, iters = 100, **kwargs):
+    def __init__(self, index, mdp, discountRate=0.9, iters=100, **kwargs):
         super().__init__(index, **kwargs)
 
         self.mdp = mdp
         self.discountRate = discountRate
         self.iters = iters
-        # self.values = {}  # A dictionary which holds the q-values for each state.
         self.values = {}  # A dictionary which holds the values for each state.
 
         # Compute the values here.
-        # use value iteration iters number of times, store 
+        # use value iteration iters number of times, store
         oldValues = {}
         states = mdp.getStates()
         for i in range(0, iters):  # for each iteration
@@ -49,24 +49,17 @@ class ValueIterationAgent(ValueEstimationAgent):
                 for action in mdp.getPossibleActions(state):
                     avg_val = 0
                     for (next_state, prob) in mdp.getTransitionStatesAndProbs(state, action):
-                        avg_val += prob * (mdp.getReward(state, action, next_state) + (discountRate * oldValues.get(next_state, 0)))
-                        # if i == 99 and state == (2,2):
-                        #     print("action: ", action)
-                        #     print("next_state, prob: ", next_state, prob)
-                        #     print("mdp.getReward(state, action, next_state): ", mdp.getReward(state, action, next_state))
-                    if (max_val is None) or (avg_val > max_val):
+                        avg_val += prob * \
+                            (mdp.getReward(state, action, next_state) +
+                             (discountRate * oldValues.get(next_state, 0)))
+
+                    if (max_val is None) or (avg_val > max_val):  # Set max val on first pass
                         max_val = avg_val
-                    # if i == 99 and state == (2,2):
-                    #     # print("action: ", action)
-                    #     print("avg_val: ", avg_val)
-                    #     print("max_val: ", max_val)
-                if max_val is None:
+                if max_val is None:  # Catches terminal states
                     max_val = 0
                 self.values[state] = max_val
             oldValues.update(self.values)
-            # print("oldValues: ", oldValues)
-            # raise Exception("Doug exception")
-    
+
     def getPolicy(self, state):
         """
         The policy is the best action in the given state
@@ -78,17 +71,15 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         best_action = None
         max_val = None
-        # print("------------- State: ", state)
         for action in self.mdp.getPossibleActions(state):
-            # print("action: ", action)
             avg_val = 0
             for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
-                avg_val += prob * (self.mdp.getReward(state, action, next_state) + (self.discountRate * self.values.get(next_state, 0)))
+                avg_val += prob * (self.mdp.getReward(state, action, next_state) +
+                                   (self.discountRate * self.values.get(next_state, 0)))
             if (max_val is None) or (avg_val > max_val):
                 max_val = avg_val
                 best_action = action
 
-        # print("max_val: ", max_val)
         return best_action
 
     def getValue(self, state):
@@ -104,7 +95,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
 
         return self.getPolicy(state)
-    
+
     def getQValue(self, state, action):
         """
         The q-value of the state action pair (after the indicated number of value iteration passes).
@@ -114,9 +105,9 @@ class ValueIterationAgent(ValueEstimationAgent):
         Take an action, then get avg of all those values
         """
 
-        
         qval = 0
         for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
-            qval += prob * (self.mdp.getReward(state, action, next_state) + (self.discountRate * self.values.get(next_state, 0)))
+            qval += prob * (self.mdp.getReward(state, action, next_state) +
+                            (self.discountRate * self.values.get(next_state, 0)))
 
         return qval
