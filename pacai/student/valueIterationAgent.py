@@ -43,17 +43,27 @@ class ValueIterationAgent(ValueEstimationAgent):
         # use value iteration iters number of times, store 
         oldValues = {}
         states = mdp.getStates()
-        for i in range(0, iters):
-            for state in states:
-                max_val = float('-inf')
+        for i in range(0, iters):  # for each iteration
+            for state in states:  # for each state
+                max_val = 0
                 for action in mdp.getPossibleActions(state):
                     avg_val = 0
                     for (next_state, prob) in mdp.getTransitionStatesAndProbs(state, action):
-                        avg_val += prob * (mdp.getReward(state, action, next_state) + (discountRate * oldValues.get(state, 0)))
+                        avg_val += prob * (mdp.getReward(state, action, next_state) + (discountRate * oldValues.get(next_state, 0)))
+                        # if i == 99 and state == (2,2):
+                        #     print("action: ", action)
+                        #     print("next_state, prob: ", next_state, prob)
+                        #     print("mdp.getReward(state, action, next_state): ", mdp.getReward(state, action, next_state))
                     if avg_val > max_val:
                         max_val = avg_val
+                    # if i == 99 and state == (2,2):
+                    #     # print("action: ", action)
+                    #     print("avg_val: ", avg_val)
+                    #     print("max_val: ", max_val)
                 self.values[state] = max_val
             oldValues.update(self.values)
+            # print("oldValues: ", oldValues)
+            # raise Exception("Doug exception")
     
     def getPolicy(self, state):
         """
@@ -65,7 +75,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
 
         best_action = None
-        max_val = float('-inf')
+        max_val = 0
         for action in self.mdp.getPossibleActions(state):
             avg_val = 0
             for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
@@ -74,7 +84,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                 max_val = avg_val
                 best_action = action
 
-        raise best_action
+        return best_action
 
     def getValue(self, state):
         """
