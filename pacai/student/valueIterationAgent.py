@@ -36,10 +36,45 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.mdp = mdp
         self.discountRate = discountRate
         self.iters = iters
-        self.values = {}  # A dictionary which holds the q-values for each state.
+        # self.values = {}  # A dictionary which holds the q-values for each state.
+        self.values = {}  # A dictionary which holds the values for each state.
 
         # Compute the values here.
-        raise NotImplementedError()
+        # use value iteration iters number of times, store 
+        oldValues = {}
+        states = mdp.getStates()
+        for i in range(0, iters):
+            for state in states:
+                max_val = float('-inf')
+                for action in mdp.getPossibleActions(state):
+                    avg_val = 0
+                    for (next_state, prob) in mdp.getTransitionStatesAndProbs(state, action):
+                        avg_val += prob * (mdp.getReward(state, action, next_state) + (discountRate * oldValues.get(state, 0)))
+                    if avg_val > max_val:
+                        max_val = avg_val
+                self.values[state] = max_val
+            oldValues.update(self.values)
+    
+    def getPolicy(self, state):
+        """
+        The policy is the best action in the given state
+        according to the values computed by value iteration.
+        You may break ties any way you see fit.
+        Note that if there are no legal actions, which is the case at the terminal state,
+        you should return None.
+        """
+
+        best_action = None
+        max_val = float('-inf')
+        for action in self.mdp.getPossibleActions(state):
+            avg_val = 0
+            for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
+                avg_val += prob * (self.mdp.getReward(state, action, next_state) + (self.discountRate * self.values.get(next_state, 0)))
+            if avg_val > max_val:
+                max_val = avg_val
+                best_action = action
+
+        raise best_action
 
     def getValue(self, state):
         """
@@ -54,3 +89,19 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
 
         return self.getPolicy(state)
+    
+    def getQValue(self, state, action):
+        """
+        The q-value of the state action pair (after the indicated number of value iteration passes).
+        Note that value iteration does not necessarily create this quantity,
+        and you may have to derive it on the fly.
+
+        Take an action, then get avg of all those values
+        """
+
+        
+        qval = 0
+        for (next_state, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
+            qval += prob * (self.mdp.getReward(state, action, next_state) + (self.discountRate * self.values.get(next_state, 0)))
+
+        return qval
