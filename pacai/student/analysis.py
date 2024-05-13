@@ -11,54 +11,61 @@ NOT_POSSIBLE = None
 
 def question2():
     """
-    [Enter a description of what you did here.]
+    Low noise means the agent always acts optimally
+    (I think optimally is the right word for it)
+    They always go where they want to
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.0
 
     return answerDiscount, answerNoise
 
 def question3a():
     """
-    [Enter a description of what you did here.]
+    Low noise means they brave cliff
+    High discount means they choose closer
+    High discount means its highly discounted, discount bad word
     """
 
-    answerDiscount = 0.9
-    answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerDiscount = 0.3
+    answerNoise = 0.0
+    answerLivingReward = 0
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3b():
     """
-    [Enter a description of what you did here.]
+    High noise means they fear the cliff
+    Low discount means they choose farther
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.5
     answerLivingReward = 0.0
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3c():
     """
-    [Enter a description of what you did here.]
+    Low noise means brave the cliff
+    Low discount means they choose farther
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0
     answerLivingReward = 0.0
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3d():
     """
-    [Enter a description of what you did here.]
+    High noise means fear the cliff
+    Low discount means they choose farther
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.4
     answerLivingReward = 0.0
 
     return answerDiscount, answerNoise, answerLivingReward
@@ -72,7 +79,7 @@ def question3e():
     answerNoise = 0.2
     answerLivingReward = 0.0
 
-    return answerDiscount, answerNoise, answerLivingReward
+    return NOT_POSSIBLE
 
 def question6():
     """
