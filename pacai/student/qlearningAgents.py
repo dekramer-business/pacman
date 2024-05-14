@@ -192,7 +192,7 @@ class ApproximateQAgent(PacmanQAgent):
         sample = reward + self.getDiscountRate() * self.getValue(nextState)
         a = (1 - self.getAlpha())
         al = self.getAlpha()
-        feats = self.featExtractor.getFeatures(state,action)
+        feats = self.featExtractor.getFeatures(state, action)
         for feature, value in feats.items():
             curr_val = self.weights.get(feature, 0.0)
             self.weights[feature] = a * curr_val + (al * sample * value)
