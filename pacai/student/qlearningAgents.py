@@ -188,14 +188,15 @@ class ApproximateQAgent(PacmanQAgent):
         idea: getFeatures of a state, action, and getValue of next state
         idea: use above to find new weights
         """
-
-        sample = reward + self.getDiscountRate() * self.getValue(nextState)
+        qval = self.getAction(state, action)
+        sample = reward + (self.getDiscountRate() * self.getValue(nextState)) - qval
         a = (1 - self.getAlpha())
         al = self.getAlpha()
         feats = self.featExtractor.getFeatures(state, action)
         for feature, value in feats.items():
             curr_val = self.weights.get(feature, 0.0)
-            self.weights[feature] = a * curr_val + (al * sample * value)
+            # self.weights[feature] = a * curr_val + (al * sample * value)
+            self.weights[feature] = curr_val + (al * sample * value)
 
     def getQValue(self, state, action):
         """
