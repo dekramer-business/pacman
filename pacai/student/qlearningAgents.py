@@ -175,9 +175,43 @@ class ApproximateQAgent(PacmanQAgent):
     def __init__(self, index,
             extractor = 'pacai.core.featureExtractors.IdentityExtractor', **kwargs):
         super().__init__(index, **kwargs)
-        self.featExtractor = reflection.qualifiedImport(extractor)
+        self.featExtractor = reflection.qualifiedImport(extractor)()
 
         # You might want to initialize weights here.
+        # self.weights = {"#-of-ghosts-1-step-away": 1, "eats-food": 1, "closest-food": 1, "bias": 1}
+        # self.featFunc = self.featExtractor()
+        self.weights = {}
+    
+    def update(self, state, action, nextState, reward):
+        """
+        Should update your weights based on transition.
+
+        idea: getFeatures of a state, action, and getValue of next state
+        idea: use above to find new weights
+        """
+
+
+        sample = reward + self.getDiscountRate() * self.getValue(nextState)
+        a = (1 - self.getAlpha())
+        for feature in self.featExtractor.getFeatures(state, action):
+            curr_val = self.weights.get(feature, 0.0)
+            self.weights[(feature)] = a * curr_val + (self.getAlpha() * sample)
+
+    def getQValue(self, state, action):
+        """
+        Should return `Q(state, action) = w * featureVector`,
+        where `*` is the dotProduct operator.
+
+        idea: getFeatures of state, actions
+        idea: dot product weights times that
+        """
+
+        dotProduct = 0
+        featureVector = self.featExtractor.getFeatures(state, action)
+        for feature, weight in self.weights.items():
+            dotProduct += weight * featureVector.get(feature, 0.0)
+
+        return dotProduct
 
     def final(self, state):
         """
