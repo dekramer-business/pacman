@@ -37,6 +37,9 @@ class BetterDefensiveReflexAgent(ReflexCaptureAgent):
         if (len(invaders) > 0):
             dists = [self.getMazeDistance(myPos, a.getPosition()) for a in invaders]
             features['invaderDistance'] = min(dists)
+    
+        enemyDists = [self.getMazeDistance(myPos, a.getPosition()) for a in enemies]
+        features['enemyDistance'] = min(enemyDists)
 
         if (action == Directions.STOP):
             features['stop'] = 1
@@ -44,6 +47,8 @@ class BetterDefensiveReflexAgent(ReflexCaptureAgent):
         rev = Directions.REVERSE[gameState.getAgentState(self.index).getDirection()]
         if (action == rev):
             features['reverse'] = 1
+        
+        
 
         return features
 
@@ -53,7 +58,8 @@ class BetterDefensiveReflexAgent(ReflexCaptureAgent):
             'onDefense': 100,
             'invaderDistance': -15,
             'stop': -100,
-            'reverse': -2
+            'reverse': -2,
+            'enemyDistance': -5
         }
     
 class BetterOffensiveReflexAgent(ReflexCaptureAgent):
@@ -71,8 +77,10 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         successor = self.getSuccessor(gameState, action)
         features['successorScore'] = self.getScore(successor)
         # print("succScore: ", features['successorScore'])
-        myState = successor.getAgentState(self.index)
+        myState = gameState.getAgentState(self.index)
         myPos = myState.getPosition()
+        myNextState = successor.getAgentState(self.index)
+        myNextPos = myNextState.getPosition()
         # Compute the location of pacman after he takes the action.
         x, y = myPos
         dx, dy = Actions.directionToVector(action)
@@ -86,24 +94,24 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         # This should always be True, but better safe than sorry.
         if (len(foodList) > 0):
             # myPos = successor.getAgentState(self.index).getPosition()
-            minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
-            minDistance = float(minDistance) / (walls.getWidth() * walls.getHeight())
-            features['distanceToFood'] = minDistance
+            minDistance = min([self.getMazeDistance(myNextPos, food) for food in foodList])
+            minDistanceNormalized = float(minDistance) / (walls.getWidth() * walls.getHeight())
+            features['distanceToFood'] = minDistanceNormalized
         
         # Farther is better, squares each maze distance to pre
         enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
         enemyGhostsPos = [a.getNearestPosition() for a in enemies if not a.isPacman() and a.getPosition() is not None]
 
-        # Get distance to closest ghost
-        closestGhost = float('inf')
-        for newGhostPos in enemyGhostsPos:
-            ghostDistanceToPac = self.getMazeDistance(
-                myPos, newGhostPos)
-            if closestGhost > ghostDistanceToPac:
-                closestGhost = ghostDistanceToPac
+        # # Get distance to closest ghost
+        # closestGhost = float('inf')
+        # for newGhostPos in enemyGhostsPos:
+        #     ghostDistanceToPac = self.getMazeDistance(
+        #         myPos, newGhostPos)
+        #     if closestGhost > ghostDistanceToPac:
+        #         closestGhost = ghostDistanceToPac
         
-        closestGhostNormalized = float(closestGhost) / (walls.getWidth() * walls.getHeight())
-        features["closest-enemy-ghost"] = closestGhostNormalized
+        # closestGhostNormalized = float(closestGhost) / (walls.getWidth() * walls.getHeight())
+        # features["closest-enemy-ghost"] = closestGhostNormalized
 
         # Count the number of ghosts 1-step away.
         features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in
@@ -115,18 +123,18 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         
         # If there is no danger of ghosts then add the food feature.
         capsule = self.getCapsules(gameState)
-        print("capsule: ", capsule)
-        print("action: ", action)
-        print(" x and y: ", (x, y))
-        print(" next x and y: ", (next_x, next_y))
+        # print("capsule: ", capsule)
+        # print("action: ", action)
+        # print(" x and y: ", (x, y))
+        # print(" next x and y: ", (next_x, next_y))
         for cap in capsule:
             if (next_x, next_y) == cap:
                 features['eats-capsule'] = 1
 
-        features['bias'] = 1
+        # features['bias'] = 1
 
         # Computes whether we're on Offense (1) or Defense (0).
-        features['onOffense'] = 0
+        features['onOffense'] = -1
         if (myState.isPacman()):
             features['onOffense'] = 1
 
@@ -138,12 +146,12 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
             'bias': 100,
             'successorScore': 20,  # may have to change this, 8 was based on losing a lot of score if you die
             'distanceToFood': -22,
-            'closest-enemy-ghost': 5,
+            'closest-enemy-ghost': 3,
             # 'totalFoodCount': -10,
             'onOffense': 5,
             '#-of-ghosts-1-step-away': -300,
-            'eats-food': 284,
-            'eats-capsule': 400
+            'eats-food': 100,
+            'eats-capsule': 150
         }
 
 def createTeam(firstIndex, secondIndex, isRed,
