@@ -48,8 +48,6 @@ class BetterDefensiveReflexAgent(ReflexCaptureAgent):
         if (action == rev):
             features['reverse'] = 1
         
-        
-
         return features
 
     def getWeights(self, gameState, action):
@@ -120,6 +118,7 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         # If there is no danger of ghosts then add the food feature.
         if features["#-of-ghosts-1-step-away"] == 0 and food[next_x][next_y]:
             features['eats-food'] = 1
+
         
         # If there is no danger of ghosts then add the food feature.
         capsule = self.getCapsules(gameState)
@@ -138,20 +137,31 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         if (myState.isPacman()):
             features['onOffense'] = 1
 
-        print("features: ", features)
+        # dont revers on our side!
+        if features['onOffense'] == -1:
+            rev = Directions.REVERSE[gameState.getAgentState(self.index).getDirection()]
+            if (action == rev):
+                features['reverse'] = 1
+        
+        if (action == Directions.STOP):
+            features['stop'] = 1
+
+        # print("features: ", features)
         return features
 
     def getWeights(self, gameState, action):
         return {
             'bias': 100,
             'successorScore': 20,  # may have to change this, 8 was based on losing a lot of score if you die
-            'distanceToFood': -22,
-            'closest-enemy-ghost': 3,
+            'distanceToFood': -40,
+            'closest-enemy-ghost': 2,
             # 'totalFoodCount': -10,
             'onOffense': 5,
             '#-of-ghosts-1-step-away': -300,
             'eats-food': 100,
-            'eats-capsule': 150
+            'eats-capsule': 150,
+            'reverse': -1,
+            'stop': -30
         }
 
 def createTeam(firstIndex, secondIndex, isRed,
