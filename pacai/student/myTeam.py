@@ -159,7 +159,6 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
     def getWeights(self, gameState, action):
         return {
             'bias': 100,
-            # may have to change this, 8 was based on losing a lot of score if you die
             'successorScore': 20,
             'distanceToFood': -40,
             'closest-enemy-ghost': 2,
