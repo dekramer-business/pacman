@@ -32,14 +32,17 @@ class BetterDefensiveReflexAgent(ReflexCaptureAgent):
         ) and a.getPosition() is not None]
         features['numInvaders'] = len(invaders)
 
+        # min distance to invaders
         if (len(invaders) > 0):
             dists = [self.getMazeDistance(
                 myPos, a.getPosition()) for a in invaders]
             features['invaderDistance'] = min(dists)
 
-        enemyDists = [self.getMazeDistance(
-            myPos, a.getPosition()) for a in enemies]
-        features['enemyDistance'] = min(enemyDists)
+        # distance to any enemy, if no invaders
+        if (len(invaders) == 0):
+            enemyDists = [self.getMazeDistance(
+                myPos, a.getPosition()) for a in enemies]
+            features['enemyDistance'] = min(enemyDists)
 
         if (action == Directions.STOP):
             features['stop'] = 1
@@ -54,8 +57,8 @@ class BetterDefensiveReflexAgent(ReflexCaptureAgent):
     def getWeights(self, gameState, action):
         return {
             'numInvaders': -1000,
-            'onDefense': 100,
-            'invaderDistance': -15,
+            'onDefense': 25,
+            'invaderDistance': -25,
             'stop': -100,
             'reverse': -2,
             'enemyDistance': -5
@@ -76,11 +79,11 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         features = {}
         successor = self.getSuccessor(gameState, action)
         features['successorScore'] = self.getScore(successor)
-        # print("succScore: ", features['successorScore'])
         myState = gameState.getAgentState(self.index)
         myPos = myState.getPosition()
         myNextState = successor.getAgentState(self.index)
         myNextPos = myNextState.getPosition()
+
         # Compute the location of pacman after he takes the action.
         x, y = myPos
         dx, dy = Actions.directionToVector(action)
@@ -92,8 +95,8 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         foodList = food.asList()
 
         # This should always be True, but better safe than sorry.
+        # prioritize states close to food
         if (len(foodList) > 0):
-            # myPos = successor.getAgentState(self.index).getPosition()
             minDistance = min([self.getMazeDistance(myNextPos, food)
                               for food in foodList])
             minDistanceNormalized = float(
@@ -106,17 +109,6 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
         enemyGhostsPos = [a.getNearestPosition(
         ) for a in enemies if not a.isPacman() and a.getPosition() is not None]
 
-        # # Get distance to closest ghost
-        # closestGhost = float('inf')
-        # for newGhostPos in enemyGhostsPos:
-        #     ghostDistanceToPac = self.getMazeDistance(
-        #         myPos, newGhostPos)
-        #     if closestGhost > ghostDistanceToPac:
-        #         closestGhost = ghostDistanceToPac
-
-        # closestGhostNormalized = float(closestGhost) / (walls.getWidth() * walls.getHeight())
-        # features["closest-enemy-ghost"] = closestGhostNormalized
-
         # Count the number of ghosts 1-step away.
         numGOSA = sum((next_x, next_y) in Actions.getLegalNeighbors(
             g, walls) for g in enemyGhostsPos)
@@ -128,15 +120,9 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
 
         # If there is no danger of ghosts then add the food feature.
         capsule = self.getCapsules(gameState)
-        # print("capsule: ", capsule)
-        # print("action: ", action)
-        # print(" x and y: ", (x, y))
-        # print(" next x and y: ", (next_x, next_y))
         for cap in capsule:
             if (next_x, next_y) == cap:
                 features['eats-capsule'] = 1
-
-        # features['bias'] = 1
 
         # Computes whether we're on Offense (1) or Defense (0).
         features['onOffense'] = -1
@@ -158,11 +144,9 @@ class BetterOffensiveReflexAgent(ReflexCaptureAgent):
 
     def getWeights(self, gameState, action):
         return {
-            'bias': 100,
             'successorScore': 20,
             'distanceToFood': -40,
             'closest-enemy-ghost': 2,
-            # 'totalFoodCount': -10,
             'onOffense': 5,
             '#-of-ghosts-1-step-away': -300,
             'eats-food': 100,
